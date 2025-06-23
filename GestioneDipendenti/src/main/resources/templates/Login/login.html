@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+<!--importo navbar-->
+<div th:replace="~{navbar/navbar :: navbar}"></div>
+
+<div class="container mt-3">
+  <div class="row justify-content-center">
+    <div class="col-4 text-center">
+      <form class="border rounded p-4 shadow-sm" th:object="${UtenteFormLogin}" th:action="@{/login}" method="post">
+        <legend>Accedi</legend>
+        <div class="mb-3">
+          <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+          <input type="text" id="username" th:field="*{username}" class="form-control"
+                 placeholder="Inserisci il tuo Username">
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Inserisci la password <span class="text-danger">*</span></label>
+          <input type="password" id="password" th:field="*{password}" class="form-control"
+                 placeholder="Inserisci password">
+        </div>
+
+        <!--Credenziali errate-->
+        <div th:if="${#fields.hasGlobalErrors()}" class="text-danger">
+          <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+        </div>
+
+        <div>
+          <button type="submit" class="btn btn-primary btn-sm" href="/">Accedi</button>
+          <a type="submit" class="btn btn-primary ms-2 btn-sm" href="login/register">Registrati</a>
+        </div>
+      </form>
+
+      <!-- Mostra l'errore se c'è un problema con il login -->
+      <div th:if="${param.error}">
+        <p class="text-danger" th:unless="${param.error == 'disabled'}">Nome utente o password non validi!</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

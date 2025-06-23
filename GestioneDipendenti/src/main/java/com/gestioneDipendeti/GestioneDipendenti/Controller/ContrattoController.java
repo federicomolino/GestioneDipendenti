@@ -1,0 +1,75 @@
+package com.gestioneDipendeti.GestioneDipendenti.Controller;
+
+import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
+import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
+import com.gestioneDipendeti.GestioneDipendenti.Entity.Utente;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.DipendenteRepository;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.UtenteRepository;
+import com.gestioneDipendeti.GestioneDipendenti.Service.ContrattoService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Optional;
+
+@Controller
+@RequestMapping("utente/utente-contratto")
+public class ContrattoController {
+
+    @Autowired
+    private UtenteRepository utenteRepository;
+
+    @Autowired
+    private DipendenteRepository dipendenteRepository;
+
+    @Autowired
+    private ContrattoRepository contrattoRepository;
+
+    @Autowired
+    private ContrattoService contrattoService;
+
+    @GetMapping("/contratto/{idUtente}")
+    public String showContratto(@PathVariable("idUtente") Long idUtente, Model model){
+        Dipendente dipendente = dipendenteRepository.findById(idUtente).get();
+        Utente utente = utenteRepository.findById(dipendente.getIdDipendente()).get();
+        model.addAttribute("utente",utente);
+        model.addAttribute("formNewContratto", new Contratto());
+        return "Contratto/Contratto";
+    }
+
+    @PostMapping("/contratto/{idUtente}")
+    public String addContrattoPerUtente(@ModelAttribute("formNewContratto") @Valid Contratto contratto,
+                                        @PathVariable("idUtente") Long idUtente, BindingResult bindingResult,
+                                        RedirectAttributes redirectAttributes, Model model){
+        Utente utente = utenteRepository.findById(idUtente).get();
+        if (bindingResult.hasErrors()){
+            model.addAttribute("utente",utente);
+            model.addAttribute("formNewContratto", contratto);
+            return "Contratto/Contratto";
+        }
+
+        //Verifico se per qull'utente esiste già un contratto
+        Dipendente dipendente = dipendenteRepository.findById(utente.getIdUtente()).get();
+        Optional<Contratto> contrattoPerUtente = contrattoRepository.findById(dipendente.getIdDipendente());
+        if (contrattoPerUtente.isPresent()){
+            redirectAttributes.addFlashAttribute("errorMessage", "Esiste già un contratto" +
+                    " per l'utente " + dipendente.getNome() + " " + dipendente.getCognome());
+            return "redirect:/utente/utente-contratto/contratto/" + utente.getIdUtente();
+        }
+
+        try {
+            contrattoService.addContratto(contratto, dipendente);
+            redirectAttributes.addFlashAttribute("successMessage","Contratto correttamente creato");
+            return "redirect:/utente/utente-contratto/contratto/" + utente.getIdUtente();
+        }catch (IllegalArgumentException ex){
+            redirectAttributes.addFlashAttribute("errorMessage","Errore durante il salvataggio" +
+                    " del contratto");
+            return  "redirect:/utente/utente-contratto/contratto/" + utente.getIdUtente();
+        }
+    }
+}

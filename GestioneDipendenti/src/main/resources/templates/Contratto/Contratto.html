@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Contratto</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/Navbar.css">
+</head>
+<body>
+<!--importo navbar-->
+<div th:replace="~{Navbar/navbar :: navbar}"></div>
+<div class="container">
+  <div class="row">
+    <div class="col-4">
+      <h2>Nuovo Contratto</h2>
+    </div>
+
+    <hr>
+
+    <div th:if="${successMessage}" class="alert alert-success d-flex justify-content-between mt-2 col-4 mx-auto">
+      <span th:text="${successMessage}">Contratto creato correttamente!</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger d-flex justify-content-between mt-2 col-4 mx-auto">
+      <span th:text="${errorMessage}">Errore durante il salvataggio</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!--Form nuovo contratto-->
+    <div class="d-flex justify-content-evenly">
+      <div class="mt-3 col-4">
+        <div class="card shadow-sm">
+          <form method="post" th:object="${formNewContratto}" th:action="@{/utente/utente-contratto/contratto/{IdUtente}(IdUtente=${utente.IdUtente})}">
+            <div class="card-header bg-success text-white d-flex justify-content-between">
+              <h5 class="mb-0">Dati Contratto</h5>
+            </div>
+
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="d-flex">
+                  <labal class="fw-bold col-6">Tipologia Contratto<span class="text-danger">*</span></labal>
+                    <select class="form-select form-select-sm col-" aria-label="Small select example" required
+                    th:field="*{tipologiaContratto}" id="tipoContratto" onchange="toggleDateContratto()">
+                      <option selected disabled value="">Scegli il contratto</option>
+                      <option value="INDETERMINATO">INDETERMINATO</option>
+                      <option value="DETERMINATO">DETERMINATO</option>
+                      <option value="PARTTIME">PART-TIME</option>
+                      <option value="APPRENDISTATO">APPRENDISTATO</option>
+                      <option value="INTERMITTENTE">INTERMITTENTE</option>
+                    </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-6 fw-bold mt-2">Ore Settimanali<span class="text-danger"> *</span></label>
+                <div class="col-6">
+                  <input type="number" id="oreSettimanali" class="form-control" aria-describedby="oreSettimanali"
+                         th:field="*{oreSettimanali}" required>
+                  <strong th:if="${#fields.hasErrors('oreSettimanali')}" class="text-danger"
+                          th:errors="*{oreSettimanali}"></strong>
+                </div>
+              </div>
+
+              <div id="dateContratto" style="display: none;">
+                <div class="row mb-3">
+                  <label class="col-6 fw-bold mt-2">Data Inizio<span class="text-danger"> *</span></label>
+                  <div class="col-6">
+                    <input type="date" id="dataInzio" class="form-control" aria-describedby="dataInzio"
+                           th:field="*{dataInzio}">
+                    <strong th:if="${#fields.hasErrors('dataInzio')}" class="text-danger"
+                            th:errors="*{dataInzio}"></strong>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <label class="col-6 fw-bold mt-2">Data Fine<span class="text-danger"> *</span></label>
+                  <div class="col-6">
+                    <input type="date" id="dataFine" class="form-control" aria-describedby="dataFine"
+                           th:field="*{dataFine}">
+                    <strong th:if="${#fields.hasErrors('dataFine')}" class="text-danger"
+                            th:errors="*{dataFine}"></strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-6 fw-bold mt-2">RAL Annua<span class="text-danger"> *</span></label>
+                <div class="col-6">
+                  <input type="number" id="stipendioLordo" class="form-control" aria-describedby="stipendioLordo"
+                         th:field="*{stipendioLordo}" required>
+                  <strong th:if="${#fields.hasErrors('stipendioLordo')}" class="text-danger"
+                          th:errors="*{stipendioLordo}"></strong>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-6 fw-bold mt-2">Ore Ferie Annuali<span class="text-danger"> *</span></label>
+                <div class="col-6">
+                  <input type="number" id="oreFerieTotali" class="form-control" aria-describedby="oreFerieTotali"
+                         th:field="*{oreFerieTotali}" required>
+                  <strong th:if="${#fields.hasErrors('oreFerieTotali')}" class="text-danger"
+                          th:errors="*{oreFerieTotali}"></strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3 me-3 text-end">
+              <button type="submit" class="btn btn-success">Crea Contratto</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--Importo script-->
+<script src ="/Contratto.js"></script>
+</body>
+</html>

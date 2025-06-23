@@ -1,0 +1,213 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/Navbar.css">
+</head>
+<body>
+<!--importo navbar-->
+<div th:replace="~{Navbar/navbar :: navbar}"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2>Il mio Utente</h2>
+
+                <!--Presenza Salvata con succeso-->
+                <div th:if="${presenzaSuccess}" class="alert alert-success
+                                            d-flex justify-content-between mt-2 col-4 mx-auto">
+                    <span th:text="${presenzaSuccess}">Presenza salvata correttamente</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <!--Presenza Non salvata-->
+                <div th:if="${presenzaError}" class="alert alert-warning
+                                            d-flex justify-content-between mt-2 col-4 mx-auto">
+                    <span th:text="${presenzaError}">Timbratura già effettuata</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <div class="col-4">
+                        <!--I miei dati-->
+                        <div class="mt-3">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">I miei dati</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Nome:</div>
+                                        <div class="col-sm-8" th:text="${Dipendete.nome}">Federico</div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Cognome:</div>
+                                        <div class="col-sm-8" th:text="${Dipendete.cognome}">Molino</div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-5 fw-bold">Data di nascita:</div>
+                                        <div class="col-sm-5" th:text="${Dipendete.dataDiNascita}">19-01-2004</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6 fw-bold">Luogo di Nascita:</div>
+                                        <div class="col-sm-4" th:text="${Dipendete.luogoDiNascita}">Rimini</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Presenze Giornaliere-->
+                        <div class="container mt-4">
+                            <div class="card shadow">
+                                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Presenze Giornaliere</h5>
+                                    <a class="link-offset-1 text-white" href="/presenza/calendar">Vedi mese
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar ms-2" viewBox="0 0 16 16">
+                                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Tabella Presenze -->
+                                    <table class="table table-bordered table-hover">
+                                        <thead class="table-success">
+                                        <tr th:if="${presenzaGiornaliera != null}">
+                                            <th>Ora Entrata</th>
+                                            <th>Ora Uscita</th>
+                                            <th>Stato</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <!-- Esempio con Thymeleaf -->
+                                        <tr th:if="${presenzaGiornaliera != null}">
+                                            <td th:text="${presenzaGiornaliera.oraEntrata}">13:00</td>
+                                            <td th:text="${presenzaGiornaliera.oraUscita}">20:00</td>
+                                            <td th:text="${presenzaGiornaliera.stato}">PRESENTE</td>
+                                        </tr>
+
+                                        <tr th:if="${presenzaGiornaliera == null}">
+                                            <strong>Nessuna timbratura effettuata oggi!!!</strong>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <!--Presenze Giornaliere-->
+                        <div class="mt-3">
+                            <form method="post" th:object="${formAddPresenza}" th:action="@{presenza/addPresenza}">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">Presenze Giornaliere</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-6 fw-bold">Giorno:</div>
+                                            <div class="col-sm-8" th:text="*{data}">14/06/2025</div>
+                                            <div th:if="${dataError}" class="alert alert-warning
+                                            d-flex justify-content-between mt-2 col-8 ms-3">
+                                                <span th:text="${dataError}">Data inserita non valida</span>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-sm-6 fw-bold">Ora Entrata:</div>
+                                            <div class="col-sm-8">
+                                                <input type="time" th:field="*{oraEntrata}">
+                                            </div>
+                                            <div th:if="${OraEntrataError}" class="alert alert-warning
+                                            d-flex justify-content-between mt-2 col-8 ms-3">
+                                                <span th:text="${OraEntrataError}">Orario Entrata inserito non valido</span>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-sm-6 fw-bold">Ora Uscita:</div>
+                                            <div class="col-sm-8">
+                                                <input type="time" th:field="*{oraUscita}">
+                                            </div>
+                                            <div th:if="${OraUscitaError}" class="alert alert-warning
+                                            d-flex justify-content-between mt-2 col-8 ms-3">
+                                                <span th:text="${OraUscitaError}">Orario Uscita inserito non valido</span>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-sm-6 fw-bold">Modalità</div>
+                                            <div class="col-sm-8">
+                                                <select class="form-select form-select-sm" aria-label="Small select example"
+                                                        th:field="*{modalita}">
+                                                    <option value="" disabled selected>Seleziona la modalità</option>
+                                                    <option value="UFFICIO">UFFICIO</option>
+                                                    <option value="SMARTWORKING">SMARTWORKING</option>
+                                                    <option value="FUORISEDE">FUORISEDE</option>
+                                                </select>
+                                            </div>
+                                            <div th:if="${modalitaError}" class="alert alert-warning
+                                            d-flex justify-content-between mt-2 col-8 ms-3">
+                                                <span th:text="${modalitaError}">Modalità inserita non valida</span>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-sm-6 fw-bold">Stato</div>
+                                            <div class="col-sm-8">
+                                                <select class="form-select form-select-sm" aria-label="Small select example"
+                                                        th:field="*{stato}" id="statoSelect" onchange="toggleDataInput()">
+                                                    <option value="" disabled selected>Seleziona il tuo stato</option>
+                                                    <option value="PRESENTE">PRESENTE</option>
+                                                    <option value="ASSENTE">ASSENTE</option>
+                                                    <option value="FERIE">FERIE</option>
+                                                    <option value="PERMESSO">PERMESSO</option>
+                                                    <option value="RITARDO">RITARDO</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!--Giorni di ferie-->
+                                        <div id="ferieInput" style="display: none;">
+                                            <div class="row mt-3">
+                                                <div class="col-sm-2 fw-bold">Dal:</div>
+                                                <input type="date" class="col-5" th:field="*{dataInizioFerie}">
+
+                                                <div th:if="${dataError}" class="alert alert-warning
+                                                d-flex justify-content-between mt-2 col-8 ms-3">
+                                                    <span th:text="${dataError}">Data inserita non valida</span>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="row mt-3">
+                                                    <div class="col-sm-2 fw-bold">Al:</div>
+                                                    <input type="date" class="col-5 ms-1" th:field="*{dataFineFerie}">
+
+                                                    <div th:if="${dataError}" class="alert alert-warning
+                                                    d-flex justify-content-between mt-2 col-8 ms-3">
+                                                        <span th:text="${dataError}">Data inserita non valida</span>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <!--Aggiunta-->
+                                    <div class="mb-2 text-end me-3">
+                                        <button type="submit" class="btn btn-success btn-sm">Aggiungi</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--Importo script-->
+<script src ="/indexScript.js"></script>
+</body>
+</html>

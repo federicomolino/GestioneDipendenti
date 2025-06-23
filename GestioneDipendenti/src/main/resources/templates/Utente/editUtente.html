@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>NuovoUtente</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/Navbar.css">
+</head>
+<body>
+<!--importo navbar-->
+<div th:replace="~{Navbar/navbar :: navbar}"></div>
+<div class="container">
+  <div class="row">
+    <div class="col-4">
+      <h2>Modifica Utente</h2>
+    </div>
+
+    <hr>
+
+    <div th:if="${successMessage}" class="alert alert-success d-flex justify-content-between mt-2 col-4 mx-auto">
+      <span th:text="${successMessage}">Modifiche effettuate correttamente!</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!--I miei dati-->
+    <div class="d-flex justify-content-evenly">
+      <div class="mt-3 col-4">
+        <div class="card shadow-sm">
+          <form method="post" th:object="${formEditUtente}" th:action="@{/utente/editUtente}">
+            <div class="card-header bg-success text-white d-flex justify-content-between">
+              <h5 class="mb-0">Dati Dipendente</h5>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <labal class="col-3 fw-bold mt-2">Nome <span class="text-danger">*</span></labal>
+                <input type="text" id="nome" class="form-control col-sm" aria-describedby="passwordHelpInline"
+                       th:field="*{nome}">
+                <strong th:if="${#fields.hasErrors('nome')}" class="text-danger" th:errors="*{nome}"></strong>
+              </div>
+              <div class="row mb-3">
+                <labal class="col-4 fw-bold mt-2">Cognome<span class="text-danger"> *</span></labal>
+                <input type="text" id="cognome" class="form-control col-sm" aria-describedby="passwordHelpInline"
+                       th:field="*{cognome}">
+                <strong th:if="${#fields.hasErrors('cognome')}" class="text-danger" th:errors="*{cognome}"></strong>
+              </div>
+              <div class="row mb-3">
+                <labal class="col-6 fw-bold mt-2">Data di Nascita <span class="text-danger">*</span></labal>
+                <input type="date" id="dataDiNascita" class="form-control col-sm" aria-describedby="passwordHelpInline"
+                       th:field="*{dataDiNascita}">
+                <strong th:if="${#fields.hasErrors('dataDiNascita')}" class="text-danger" th:errors="*{dataDiNascita}"></strong>
+              </div>
+              <div class="row mb-3">
+                <labal class="col-5 fw-bold mt-2">Luogo di Nascita <span class="text-danger">*</span></labal>
+                <input type="text" id="luogoDiNascita" class="form-control col-sm" aria-describedby="passwordHelpInline"
+                       th:field="*{luogoDiNascita}">
+                <strong th:if="${#fields.hasErrors('luogoDiNascita')}" class="text-danger" th:errors="*{luogoDiNascita}"></strong>
+              </div>
+
+              <div class="row mb-3">
+                <labal class="col-5 fw-bold mt-2">Email <span class="text-danger">*</span></labal>
+                <input type="text" id="email" class="form-control col-sm" aria-describedby="passwordHelpInline"
+                       th:field="*{email}">
+                <strong th:if="${#fields.hasErrors('email')}" class="text-danger" th:errors="*{email}"></strong>
+              </div>
+
+              <div class="row mb-3">
+                <labal class="col-5 fw-bold mt-2">Username <span class="text-danger">*</span></labal>
+                <input type="text" id="username" class="form-control col-sm" aria-describedby="passwordHelpInline"
+                       th:field="*{username}">
+                <strong th:if="${#fields.hasErrors('username')}" class="text-danger" th:errors="*{username}"></strong>
+              </div>
+
+              <div class="row mb-3">
+                <labal class="col-5 fw-bold mt-2">Password <span class="text-danger">*</span></labal>
+                <input type="password" id="password" class="form-control col-sm" aria-describedby="passwordHelpInline"
+                       th:field="*{password}">
+                <strong th:if="${#fields.hasErrors('password')}" class="text-danger" th:errors="*{password}"></strong>
+              </div>
+              <hr>
+              <div>
+                <strong>Ruoli Utente</strong>
+
+                <div class="form-check small mt-2">
+                  <input class="form-check-input" type="checkbox" value="ADMIN" id="checkDefault" name="ruoli"
+                  th:checked="${formEditUtente.ruoli.contains('ADMIN')}">
+                  <label class="form-check-label" for="checkDefault">ADMIN</label>
+                </div>
+                <div class="form-check small">
+                  <input class="form-check-input" type="checkbox" value="USER" id="checkChecked" checked
+                         name="ruoli" th:checked="${formEditUtente.ruoli.contains('USER')}">
+                  <label class="form-check-label" for="checkChecked">USER</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3 me-3 text-end">
+              <button type="submit" class="btn btn-success">Modifica</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+</body>
+</html>
