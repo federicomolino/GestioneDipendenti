@@ -55,7 +55,7 @@ public class ContrattoController {
 
         //Verifico se per qull'utente esiste già un contratto
         Dipendente dipendente = dipendenteRepository.findById(utente.getIdUtente()).get();
-        Optional<Contratto> contrattoPerUtente = contrattoRepository.findById(dipendente.getIdDipendente());
+        Optional<Contratto> contrattoPerUtente = contrattoRepository.findBydipendente(dipendente);
         if (contrattoPerUtente.isPresent()){
             redirectAttributes.addFlashAttribute("errorMessage", "Esiste già un contratto" +
                     " per l'utente " + dipendente.getNome() + " " + dipendente.getCognome());

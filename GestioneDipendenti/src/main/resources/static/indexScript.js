@@ -5,6 +5,6 @@ function toggleDataInput (){
     if (stato === "FERIE"){
         ferieDiv.style.display = "block";
     }else{
-        ferieDiv.style.dispaly = "none";
+        ferieDiv.style.display = "none";
     }
 }
