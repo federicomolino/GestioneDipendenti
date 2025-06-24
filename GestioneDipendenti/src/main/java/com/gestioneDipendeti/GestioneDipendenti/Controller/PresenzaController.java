@@ -1,7 +1,9 @@
 package com.gestioneDipendeti.GestioneDipendenti.Controller;
 
+import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Presenza;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.PresenzaRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
 import com.gestioneDipendeti.GestioneDipendenti.Service.PresenzaService;
@@ -15,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("presenza")
@@ -28,6 +31,10 @@ public class PresenzaController {
 
     @Autowired
     private PresenzaRepository presenzaRepository;
+
+    @Autowired
+    private ContrattoRepository contrattoRepository;
+
 
     @PostMapping("/addPresenza")
     public String addPresenza(@Valid @ModelAttribute("formAddPresenza")Presenza presenza, BindingResult bindingResult,
@@ -46,10 +53,13 @@ public class PresenzaController {
             try{
                 presenzaService.addPresenzaConFerie(presenza,principal);
                 return "redirect:/";
+            }catch (ArithmeticException ex){
+                redirectAttributes.addFlashAttribute("presenzaError", "Limite ferire superato!!");
+                return "redirect:/";
             }catch (Exception e){
                 redirectAttributes.addFlashAttribute("presenzaError", "Errore generico durante" +
                         "il tentativo di salvataggio");
-                return "redirect:/";
+                    return "redirect:/";
             }
         }
 
@@ -86,12 +96,20 @@ public class PresenzaController {
 
     @GetMapping("/calendar")
     public String showCalendar(@RequestParam(name = "ricercaData", required = false) String ricercaData,
-                               Model model, Principal principal){
+                               Model model, Principal principal, RedirectAttributes redirectAttributes){
         Dipendente dipendente = loginService.recuperoDipendente(principal);
+        Optional<Contratto> contratto = contrattoRepository.findBydipendente(dipendente);
+        if (!contratto.isPresent()){
+            redirectAttributes.addFlashAttribute("presenzaError","L'utente non ha un contratto");
+            return "redirect:/";
+        }
+        int oreFerieRimanenti = contratto.get().getOreFerieTotali() - contratto.get().getOreFerieUtilizzate();
         if (ricercaData == null || ricercaData.isEmpty()){
             model.addAttribute("listaPresenze", presenzaRepository.findByListPrenseza(dipendente));
+            model.addAttribute("oreFerieRimanenti",oreFerieRimanenti);
         }else {
             model.addAttribute("listaPresenze", presenzaRepository.findBySearchData(dipendente,ricercaData));
+            model.addAttribute("oreFerieRimanenti",oreFerieRimanenti);
         }
         return "Calendar/Calendar";
     }

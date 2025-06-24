@@ -72,4 +72,44 @@ public class ContrattoController {
             return  "redirect:/utente/utente-contratto/contratto/" + utente.getIdUtente();
         }
     }
+
+    @GetMapping("/contratto/edit/{IdUtente}")
+    public String showContrattoUtente(@PathVariable("IdUtente") Long idUtente, Model model, RedirectAttributes redirectAttributes){
+        Dipendente dipendente = dipendenteRepository.findById(idUtente).get();
+        Utente utente = utenteRepository.findById(dipendente.getIdDipendente()).get();
+        Optional<Contratto> contratto = contrattoRepository.findBydipendente(dipendente);
+        if (!contratto.isPresent()){
+            redirectAttributes.addFlashAttribute("errorMessage","Nessun contratto per il dipendente" +
+                    " selezionato");
+            return "redirect:/utente/nuovoUtente";
+        }
+        model.addAttribute("contrattoDi",dipendente.getNome() + " " + dipendente.getCognome());
+        model.addAttribute("utente", utente);
+        model.addAttribute("formEditContratto",contratto);
+        return "Contratto/ContrattoEdit";
+    }
+
+    @PostMapping("/contratto/edit/{IdUtente}")
+    public String editContratto(@Valid @ModelAttribute("formEditContratto")Contratto contratto,
+                                @PathVariable("IdUtente") Long idUtente, RedirectAttributes redirectAttributes,
+                                Model model, BindingResult bindingResult){
+        Utente utente = utenteRepository.findById(idUtente).get();
+        Dipendente dipendente = dipendenteRepository.findById(idUtente).get();
+        if (bindingResult.hasErrors()){
+            model.addAttribute("contrattoDi",dipendente.getNome() + " " + dipendente.getCognome());
+            model.addAttribute("utente", utente);
+            model.addAttribute("formEditContratto",contratto);
+            return "Contratto/ContrattoEdit";
+        }
+
+        try{
+            contrattoService.editContratto(contratto,dipendente);
+            redirectAttributes.addFlashAttribute("successMessage", "Contratto modificato correttamente");
+            return "redirect:/utente/utente-contratto/contratto/edit/" + utente.getIdUtente();
+        }catch (IllegalArgumentException ex){
+            redirectAttributes.addFlashAttribute("errorMessage","Errore durante il salvataggio" +
+                    " del contratto");
+            return "redirect:/utente/utente-contratto/contratto/edit/" + utente.getIdUtente();
+        }
+    }
 }

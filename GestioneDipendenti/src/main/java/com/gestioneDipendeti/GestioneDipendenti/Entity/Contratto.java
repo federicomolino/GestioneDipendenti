@@ -1,6 +1,7 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,9 +19,11 @@ public class Contratto {
     private tipologiaContratto tipologiaContratto;
 
     @Column(nullable = false, name = "data_inizio")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataInzio;
 
     @Column(name = "data_fine")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataFine;
 
     private int oreSettimanali;

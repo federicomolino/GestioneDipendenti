@@ -22,6 +22,11 @@
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
+    <div th:if="${errorMessage}" class="alert alert-danger d-flex justify-content-between mt-2 col-4 mx-auto">
+      <span th:text="${errorMessage}">Errore generico</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
       <!--I miei dati-->
       <div class="d-flex justify-content-evenly">
         <div class="mt-3 col-4">
@@ -124,7 +129,14 @@
                           <li class="list-group-item d-flex justify-content-between">
 
                             <span th:text="${utenti.username}">federico.molino</span>
-                            <div class="col-3 d-flex justify-content-between">
+                            <div class="col-4 d-flex justify-content-evenly">
+
+                              <a type="submit" class="btn btn-sm border-dark" sec:authorize="hasAuthority('ADMIN')"
+                                 title="Vedi contratto dipendente"
+                                 th:href="@{utente-contratto/contratto/edit/{IdUtente}(IdUtente=${utenti.IdUtente})}">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgLnJmmn5Dbw6G7LwfCU9946DKmpRlaPxaQg&s" style="width: 16px; height: 16px;">
+                              </a>
+
                               <a type="submit" class="btn btn-sm border-dark" sec:authorize="hasAuthority('ADMIN')"
                                       title="Crea contratto" th:href="@{utente-contratto/contratto/{IdUtente}(IdUtente=${utenti.IdUtente})}">
                                 <img src="https://cdn-icons-png.flaticon.com/512/2666/2666501.png" style="width: 16px; height: 16px;">

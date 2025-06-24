@@ -19,15 +19,21 @@
           <h2 class="mb-4 text-center">Presenze Mese Corrente</h2>
         </div>
         <!--Ricerca Per data-->
-        <div class="row col-2">
-          <label class="mb-1">Ricerca per mese</label>
-          <form class="d-flex" role="search" method="get" th:action="@{/presenza/calendar}">
-            <input class="form-control mb-2 me-2" type="month" placeholder="Cerca per data" aria-label="Search"
-            name="ricercaData"/>
-            <div class="mt-1">
-              <button class="btn btn-outline-success btn-sm" type="submit">Cerca</button>
-            </div>
-          </form>
+        <div class="d-flex justify-content-between">
+          <div class="row col-2">
+            <label class="mb-1">Ricerca per mese</label>
+            <form class="d-flex" role="search" method="get" th:action="@{/presenza/calendar}">
+              <input class="form-control mb-2 me-2" type="month" placeholder="Cerca per data" aria-label="Search"
+                     name="ricercaData"/>
+              <div class="mt-1">
+                <button class="btn btn-outline-success btn-sm" type="submit">Cerca</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="mt-5">
+            <span>Ore ferire disponibili: <strong th:text="${oreFerieRimanenti}">265</strong></span>
+          </div>
         </div>
 
         <div class="table-responsive">

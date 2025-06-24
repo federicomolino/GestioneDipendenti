@@ -8,3 +8,8 @@ function toggleDateContratto (){
         dateContrattoDiv.style.display = "block";
     }
 }
+
+/*Comportamento dinamico della select in automatico*/
+document.addEventListener("DOMContentLoaded", function () {
+    toggleDateContratto();
+});

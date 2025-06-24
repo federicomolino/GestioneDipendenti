@@ -43,4 +43,48 @@ public class ContrattoService {
         contratto.setDipendente(dipendente);
         return contrattoRepository.save(contratto);
     }
+
+    public Contratto editContratto(Contratto contratto, Dipendente dipendente) throws IllegalArgumentException{
+
+        //contratto a tempo indenterminato
+        if (contratto.getTipologiaContratto().equals(tipologiaContratto.INDETERMINATO)){
+            Contratto contrattoDipendente = contrattoRepository.findBydipendente(dipendente).get();
+            LocalDate dataFine = LocalDate.of(2200,12,31);
+            contrattoDipendente.setDataInzio(LocalDate.now());
+            contrattoDipendente.setTipologiaContratto(contratto.getTipologiaContratto());
+            contrattoDipendente.setDataFine(dataFine);
+            contrattoDipendente.setDipendente(dipendente);
+            contrattoDipendente.setOreSettimanali(contratto.getOreSettimanali());
+            contrattoDipendente.setStipendioLordo(contratto.getStipendioLordo());
+            contrattoDipendente.setOreFerieTotali(contratto.getOreFerieTotali());
+            contrattoDipendente.setOreFerieUtilizzate(contratto.getOreFerieUtilizzate());
+            return contrattoRepository.save(contrattoDipendente);
+        }
+        if (contratto.getDataInzio().isAfter(contratto.getDataFine())){
+            throw new IllegalArgumentException("La data di inizio non può essere superiore a quella di fine");
+        }
+
+        if (contratto.getOreSettimanali()<20){
+            throw new IllegalArgumentException("Ore minime di 20");
+        }
+
+        double stipendioLordoAnnuo = contratto.getStipendioLordo().doubleValue();
+        if (stipendioLordoAnnuo <= 100){
+            throw new IllegalArgumentException("Minimo 101");
+        }
+
+        if (contratto.getOreFerieTotali()<=0){
+            throw new IllegalArgumentException("Ore ferie inserite non valide");
+        }
+        Contratto contrattoDipendente = contrattoRepository.findBydipendente(dipendente).get();
+        contrattoDipendente.setDataInzio(contratto.getDataInzio());
+        contrattoDipendente.setTipologiaContratto(contratto.getTipologiaContratto());
+        contrattoDipendente.setDataFine(contratto.getDataFine());
+        contrattoDipendente.setDipendente(dipendente);
+        contrattoDipendente.setOreSettimanali(contratto.getOreSettimanali());
+        contrattoDipendente.setStipendioLordo(contratto.getStipendioLordo());
+        contrattoDipendente.setOreFerieTotali(contratto.getOreFerieTotali());
+        contrattoDipendente.setOreFerieUtilizzate(contratto.getOreFerieUtilizzate());
+        return contrattoRepository.save(contrattoDipendente);
+    }
 }
