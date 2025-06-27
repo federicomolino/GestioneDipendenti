@@ -1,6 +1,7 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
@@ -12,9 +13,13 @@ public class Dipartimento {
     @Column(name = "id_dipartimento")
     private Long idDipartimento;
 
+    @NotBlank(message = "Non può essere vuoto")
     private String dipartimento;
 
     private int dipendentiPresenti;
+
+    @NotBlank(message = "Non può essere vuoto")
+    private String descrizioneDipartimento;
 
     @ManyToMany(mappedBy = "dipartimento")
     private List<Dipendente> dipendente;
@@ -49,5 +54,13 @@ public class Dipartimento {
 
     public void setDipendente(List<Dipendente> dipendente) {
         this.dipendente = dipendente;
+    }
+
+    public String getDescrizioneDipartimento() {
+        return descrizioneDipartimento;
+    }
+
+    public void setDescrizioneDipartimento(String descrizioneDipartimento) {
+        this.descrizioneDipartimento = descrizioneDipartimento;
     }
 }

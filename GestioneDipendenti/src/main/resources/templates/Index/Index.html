@@ -53,6 +53,19 @@
                                         <div class="col-sm-6 fw-bold">Luogo di Nascita:</div>
                                         <div class="col-sm-4" th:text="${Dipendete.luogoDiNascita}">Rimini</div>
                                     </div>
+                                    <!--Informazioni contratto-->
+                                    <div th:unless ="${Contratto == null}" class="mt-3">
+                                        <hr>
+                                        <h5>Informazioni Contratto</h5>
+                                        <div class="row mt-2">
+                                            <div class="col-sm-6 fw-bold">Tipologia Contratto:</div>
+                                            <div class="col-sm-6" th:text="${Contratto.tipologiaContratto}">INDETERMINATO</div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-sm-6 fw-bold">Ore ferie disponibili: </div>
+                                            <div class="col-sm-6" th:text="${oreFerieRimaste}">260</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

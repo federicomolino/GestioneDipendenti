@@ -1,6 +1,9 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Ruolo {
@@ -10,10 +13,13 @@ public class Ruolo {
     @Column(name = "id_ruolo")
     private Long idRuolo;
 
+    @NotBlank(message = "Il campo non può essere vuoto")
     private String nome;
 
     private String descrizione;
 
+    @Min(value = 1, message = "il livello più basso è il 7")
+    @Max(value = 7, message = "il livello più alto è 1")
     private int livello;
 
     private String areaFunzionale;

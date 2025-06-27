@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Dipartimento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/Navbar.css">
+</head>
+<body>
+<!--importo navbar-->
+<div th:replace="~{Navbar/navbar :: navbar}"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <h2>Nuovo Dipartimento</h2>
+        </div>
+
+        <hr>
+
+        <div th:if="${successMessage}" class="alert alert-success d-flex justify-content-between mt-2 col-4 mx-auto">
+            <span th:text="${successMessage}">Dipartimento creato correttamente!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger d-flex justify-content-between mt-2 col-4 mx-auto">
+            <span th:text="${errorMessage}">Errore durante il salvataggio</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <!-- Form nuovo Dipartimento -->
+            <div class="mt-3 col-5">
+                <div class="card shadow-sm">
+                    <form method="post" th:object="${formNewDipartimento}" th:action="@{/dipartimento/nuovo-dipartimento}">
+                        <div class="card-header bg-success text-white d-flex justify-content-between">
+                            <h5 class="mb-0">Crea Dipartimento</h5>
+                        </div>
+
+                        <div class="col-10 mt-3 ms-2">
+                            <label class="form-label">Nome Dipartimento</label>
+                            <input th:field="*{dipartimento}" class="form-control" type="text" placeholder="nuovo Dipartimento"
+                                   aria-label="default input example">
+                            <strong th:if="${#fields.hasErrors('dipartimento')}" class="text-danger" th:errors="*{dipartimento}"></strong>
+
+                            <div class="mb-2 mt-2 ms-1">
+                                <label class="form-label">Descrizione dipartimento</label>
+                                <textarea th:field="*{descrizioneDipartimento}" class="form-control" rows="3"></textarea>
+                                <strong th:if="${#fields.hasErrors('descrizioneDipartimento')}" class="text-danger" th:errors="*{descrizioneDipartimento}"></strong>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 me-3 text-end">
+                            <button type="submit" class="btn btn-sm btn-success">Aggiungi Dipartimento</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lista Dipartimenti -->
+            <div class="mt-3 col-5">
+                <div th:if="${dipartimenti.isEmpty or dipartimenti == null}">
+                    <strong class="text-danger">Nessun Dipartimento presente!!</strong>
+                </div>
+                <div th:unless="${dipartimenti.isEmpty or dipartimenti == null}">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-success text-white d-flex justify-content-between">
+                            <h5 class="mb-0">Dipartimenti Presenti</h5>
+                        </div>
+                        <ul class="mt-3" th:each="dipartimento : ${dipartimenti}">
+                            <li th:text="${dipartimento.dipartimento}">nome</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--Importo script-->
+<script src ="/Contratto.js"></script>
+</body>
+</html>
