@@ -8,6 +8,8 @@ import com.gestioneDipendeti.GestioneDipendenti.Repository.DipendenteRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.RoleRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -28,6 +30,9 @@ public class UtenteService {
 
     @Autowired
     private LoginService loginService;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     public Dipendente addDipendente(NuovoUtenteDTO nuovoUtenteDTO){
         Dipendente nuovoDipendente = new Dipendente();
@@ -92,5 +97,14 @@ public class UtenteService {
     public void cancellaDipendente(Long idUtente){
         Dipendente dipendente = dipendenteRepository.findById(idUtente).get();
         dipendenteRepository.delete(dipendente);
+    }
+
+    //InvioEmail
+    public void invioEmailCreazioneUtente(String email){
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Registrazione Confermata!");
+        message.setText("Ciao, confermiamo la registrazione");
+        javaMailSender.send(message);
     }
 }

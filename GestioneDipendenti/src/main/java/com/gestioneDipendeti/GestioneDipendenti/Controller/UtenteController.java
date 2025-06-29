@@ -25,7 +25,9 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/utente")
-public class UtenteController {
+public class
+
+UtenteController {
 
     @Autowired
     private UtenteRepository utenteRepository;
@@ -81,6 +83,7 @@ public class UtenteController {
         //Salvo utente e dipendente
         utenteRepository.save(utenteService.addUtente(nuovoUtenteDTO,ruoli));
         dipendenteRepository.save(utenteService.addDipendente(nuovoUtenteDTO));
+        utenteService.invioEmailCreazioneUtente(nuovoUtenteDTO.getEmail());
         return "redirect:/";
     }
 
