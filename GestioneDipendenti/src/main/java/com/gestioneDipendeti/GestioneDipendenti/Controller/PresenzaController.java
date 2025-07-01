@@ -123,14 +123,14 @@ public class PresenzaController {
 
     @PostMapping("/calendar/{idPresenza}")
     public String editDay(@Valid @ModelAttribute("formEditDay") Presenza formEditDay, BindingResult bindingResult,
-                          RedirectAttributes redirectAttributes){
+                          RedirectAttributes redirectAttributes, Principal principal){
         if(bindingResult.hasErrors()){
             redirectAttributes.addFlashAttribute("errorMessage", "Errore nella modifica dei dati");
             return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
         }
 
         //modifica la presenza
-        presenzaService.editPresenza(formEditDay);
+        presenzaService.editPresenza(formEditDay, principal);
         redirectAttributes.addFlashAttribute("successMessage", "Modifica Effettuata");
         return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
     }

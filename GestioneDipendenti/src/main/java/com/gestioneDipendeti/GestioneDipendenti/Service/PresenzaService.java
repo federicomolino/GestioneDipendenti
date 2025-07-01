@@ -97,8 +97,35 @@ public class PresenzaService {
         }
     }
 
-    public Presenza editPresenza(Presenza presenza){
+    public Presenza editPresenza(Presenza presenza, Principal principal){
         Presenza presenzaEsistente = presenzaRepository.findById(presenza.getIdPresenza()).get();
+        if (presenza.getStato().equals(StatoPresenza.PERMESSO)){
+            Utente utente = loginService.recuperoUtente(principal);
+            Dipendente dipendente = utente.getDipendente();
+
+            LocalTime oraUscita = presenzaEsistente.getOraUscita();
+            LocalTime oraEntrata = presenzaEsistente.getOraEntrata();
+            LocalTime oraUscitaInput = presenza.getOraUscita();
+            LocalTime oraEntrataInput = presenza.getOraEntrata();
+            //Durante salvata
+            Duration differenzaPresenteSalvata = Duration.between(oraUscita,oraEntrata);
+            float oreTotaliPermessoConvertitoInFloat = differenzaPresenteSalvata.toMinutes() / 60.0f;
+            //Durante input
+            Duration differenzaPresenteInput = Duration.between(oraUscitaInput,oraEntrataInput);
+            float oreTotaliPermessoInputConvertitoInFloat = differenzaPresenteInput.toMinutes() / 60.0f;
+            //Mi recupero il contratto
+            Contratto contratto = contrattoRepository.findBydipendente(dipendente).get();
+            if (oreTotaliPermessoConvertitoInFloat > oreTotaliPermessoInputConvertitoInFloat){
+                float diferenzaDaAumentare = oreTotaliPermessoConvertitoInFloat - oreTotaliPermessoInputConvertitoInFloat;
+                contratto.setOreFerieUtilizzate(contratto.getOreFerieUtilizzate() - diferenzaDaAumentare);
+                contrattoRepository.save(contratto);
+            }else {
+                float diferenzaDaAumentare = oreTotaliPermessoConvertitoInFloat - oreTotaliPermessoInputConvertitoInFloat;
+                contratto.setOreFerieUtilizzate(contratto.getOreFerieUtilizzate() + diferenzaDaAumentare);
+                contrattoRepository.save(contratto);
+            }
+
+        }
         presenzaEsistente.setOraEntrata(presenza.getOraEntrata());
         presenzaEsistente.setOraUscita(presenza.getOraUscita());
         presenzaEsistente.setModalita(presenza.getModalita());
