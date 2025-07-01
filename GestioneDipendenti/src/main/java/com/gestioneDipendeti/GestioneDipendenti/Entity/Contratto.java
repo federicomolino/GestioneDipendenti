@@ -35,23 +35,23 @@ public class Contratto {
     @JoinColumn(name = "id_dipendente")
     private Dipendente dipendente;
 
-    private int oreFerieTotali;
+    private float oreFerieTotali;
 
-    private int oreFerieUtilizzate;
+    private float oreFerieUtilizzate;
 
-    public int getOreFerieUtilizzate() {
+    public float getOreFerieUtilizzate() {
         return oreFerieUtilizzate;
     }
 
-    public void setOreFerieUtilizzate(int oreFerieUtilizzate) {
+    public void setOreFerieUtilizzate(float oreFerieUtilizzate) {
         this.oreFerieUtilizzate = oreFerieUtilizzate;
     }
 
-    public int getOreFerieTotali() {
+    public float getOreFerieTotali() {
         return oreFerieTotali;
     }
 
-    public void setOreFerieTotali(int oreFerieTotali) {
+    public void setOreFerieTotali(float oreFerieTotali) {
         this.oreFerieTotali = oreFerieTotali;
     }
 

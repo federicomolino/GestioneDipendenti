@@ -52,7 +52,7 @@ public class indexController {
 
         if (contrattoDipendente.isPresent()){
             Contratto contratto = contrattoDipendente.get();
-            int oreFerieRimaste = contrattoDipendente.get().getOreFerieTotali() - contrattoDipendente.get().getOreFerieUtilizzate();
+            float oreFerieRimaste = contrattoDipendente.get().getOreFerieTotali() - contrattoDipendente.get().getOreFerieUtilizzate();
             model.addAttribute("Contratto", contratto);
             model.addAttribute("oreFerieRimaste", oreFerieRimaste);
         }

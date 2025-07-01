@@ -103,7 +103,7 @@ public class PresenzaController {
             redirectAttributes.addFlashAttribute("presenzaError","L'utente non ha un contratto");
             return "redirect:/";
         }
-        int oreFerieRimanenti = contratto.get().getOreFerieTotali() - contratto.get().getOreFerieUtilizzate();
+        float oreFerieRimanenti = contratto.get().getOreFerieTotali() - contratto.get().getOreFerieUtilizzate();
         if (ricercaData == null || ricercaData.isEmpty()){
             model.addAttribute("listaPresenze", presenzaRepository.findByListPrenseza(dipendente));
             model.addAttribute("oreFerieRimanenti",oreFerieRimanenti);

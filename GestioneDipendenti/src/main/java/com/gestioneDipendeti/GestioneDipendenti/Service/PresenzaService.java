@@ -1,16 +1,15 @@
 package com.gestioneDipendeti.GestioneDipendenti.Service;
 
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Presenza;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Utente;
+import com.gestioneDipendeti.GestioneDipendenti.Entity.*;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.PresenzaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -30,6 +29,10 @@ public class PresenzaService {
         //Setto id Utente
         Utente utente = loginService.recuperoUtente(principal);
         Dipendente dipendente = utente.getDipendente();
+
+        if (presenza.getStato().equals(StatoPresenza.PERMESSO)){
+            addPresenzaConPermesso(presenza, principal);
+        }
         presenza.setDipendente(dipendente);
         return presenzaRepository.save(presenza);
     }
@@ -72,6 +75,25 @@ public class PresenzaService {
             }else {
                 throw new IllegalArgumentException("L'utente non ha nessun contratto!!");
             }
+        }
+    }
+
+    public void addPresenzaConPermesso(Presenza presenza, Principal principal){
+        Utente utente = loginService.recuperoUtente(principal);
+        Dipendente dipendente = utente.getDipendente();
+        LocalTime oraUscita = presenza.getOraUscita();
+        LocalTime oraEntrata = presenza.getOraEntrata();
+
+        //Verifico se esiste un contratto per il dipendente
+        Optional<Contratto> contrattoDipendente = contrattoRepository.findBydipendente(dipendente);
+        if(contrattoDipendente.isPresent()){
+            //Restituisce il totale dei minuti
+            Duration durataTotalePermesso = Duration.between(oraUscita,oraEntrata);
+            // Converto la durata divindendo per 60 per prendermi le ore e metterlo in float
+            float oreTotaliPermessoConvertitoInFloat = durataTotalePermesso.toMinutes() / 60.0f;
+            contrattoDipendente.get().setOreFerieUtilizzate(contrattoDipendente.get().getOreFerieUtilizzate() + oreTotaliPermessoConvertitoInFloat);
+            Contratto contrattoDipendenteEsistente = contrattoDipendente.get();
+            contrattoRepository.save(contrattoDipendenteEsistente);
         }
     }
 
