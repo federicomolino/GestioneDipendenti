@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.zip.DataFormatException;
 
 @Controller
 @RequestMapping("presenza")
@@ -89,8 +90,13 @@ public class PresenzaController {
         }
 
         //Mi salvo la presenza
-        presenzaService.addPreseza(presenza,principal);
-        redirectAttributes.addFlashAttribute("presenzaSuccess","Presenza Salvata con successo");
+        try{
+            presenzaService.addPreseza(presenza,principal);
+            redirectAttributes.addFlashAttribute("presenzaSuccess","Presenza Salvata con successo");
+        }catch (DataFormatException ex){
+            redirectAttributes.addFlashAttribute("presenzaError","Orari del permesso inseriti errati");
+            return "redirect:/";
+        }
         return "redirect:/";
     }
 
@@ -130,8 +136,13 @@ public class PresenzaController {
         }
 
         //modifica la presenza
-        presenzaService.editPresenza(formEditDay, principal);
-        redirectAttributes.addFlashAttribute("successMessage", "Modifica Effettuata");
-        return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
+        try {
+            presenzaService.editPresenza(formEditDay, principal);
+            redirectAttributes.addFlashAttribute("successMessage", "Modifica Effettuata");
+            return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
+        }catch (DataFormatException ex){
+            redirectAttributes.addFlashAttribute("errorMessage", "Orari del permesso inseriti errati");
+            return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
+        }
     }
 }

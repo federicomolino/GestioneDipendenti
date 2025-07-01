@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
+import java.util.zip.DataFormatException;
 
 @Service
 public class PresenzaService {
@@ -25,13 +26,17 @@ public class PresenzaService {
     private ContrattoRepository contrattoRepository;
 
 
-    public Presenza addPreseza (Presenza presenza, Principal principal){
+    public Presenza addPreseza (Presenza presenza, Principal principal) throws DataFormatException{
         //Setto id Utente
         Utente utente = loginService.recuperoUtente(principal);
         Dipendente dipendente = utente.getDipendente();
 
         if (presenza.getStato().equals(StatoPresenza.PERMESSO)){
-            addPresenzaConPermesso(presenza, principal);
+            try {
+                addPresenzaConPermesso(presenza, principal);
+            }catch (DataFormatException ex){
+                throw ex;
+            }
         }
         presenza.setDipendente(dipendente);
         return presenzaRepository.save(presenza);
@@ -78,11 +83,15 @@ public class PresenzaService {
         }
     }
 
-    public void addPresenzaConPermesso(Presenza presenza, Principal principal){
+    public void addPresenzaConPermesso(Presenza presenza, Principal principal) throws DataFormatException {
         Utente utente = loginService.recuperoUtente(principal);
         Dipendente dipendente = utente.getDipendente();
         LocalTime oraUscita = presenza.getOraUscita();
         LocalTime oraEntrata = presenza.getOraEntrata();
+
+        if (oraUscita.isAfter(oraEntrata)){
+            throw new DataFormatException("Ora uscita più grande dell'oraEntrata");
+        }
 
         //Verifico se esiste un contratto per il dipendente
         Optional<Contratto> contrattoDipendente = contrattoRepository.findBydipendente(dipendente);
@@ -97,7 +106,7 @@ public class PresenzaService {
         }
     }
 
-    public Presenza editPresenza(Presenza presenza, Principal principal){
+    public Presenza editPresenza(Presenza presenza, Principal principal) throws DataFormatException {
         Presenza presenzaEsistente = presenzaRepository.findById(presenza.getIdPresenza()).get();
         if (presenza.getStato().equals(StatoPresenza.PERMESSO)){
             Utente utente = loginService.recuperoUtente(principal);
@@ -107,6 +116,11 @@ public class PresenzaService {
             LocalTime oraEntrata = presenzaEsistente.getOraEntrata();
             LocalTime oraUscitaInput = presenza.getOraUscita();
             LocalTime oraEntrataInput = presenza.getOraEntrata();
+
+            if (oraUscitaInput.isAfter(oraEntrataInput)){
+                throw new DataFormatException("Ora uscita più grande dell'oraEntrata");
+            }
+
             //Durante salvata
             Duration differenzaPresenteSalvata = Duration.between(oraUscita,oraEntrata);
             float oreTotaliPermessoConvertitoInFloat = differenzaPresenteSalvata.toMinutes() / 60.0f;
