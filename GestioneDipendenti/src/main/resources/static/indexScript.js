@@ -25,6 +25,8 @@ function toggleDataInput (){
         setDisabledInputs(oraUscitaDiv, true);
 
     }else{
+        oraEntrataDiv.style.display = "block";
+         oraUscitaDiv.style.display = "block";
         ferieDiv.style.display = "none";
         permessoDiv.style.display = "none";
     }

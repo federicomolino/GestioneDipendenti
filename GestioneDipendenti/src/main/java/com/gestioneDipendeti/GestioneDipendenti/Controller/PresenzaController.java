@@ -145,4 +145,29 @@ public class PresenzaController {
             return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
         }
     }
+
+    @GetMapping("/calendar/chiudi-giornata/{idPresenza}")
+    public String showChiudiGiornata(@PathVariable("idPresenza") Long idPresenza, Model model){
+        Presenza presenzaSelezionata = presenzaRepository.findById(idPresenza).get();
+        model.addAttribute("presenza",presenzaSelezionata);
+        return "Calendar/Calendar";
+    }
+    @PostMapping("/calendar/chiudi-giornata/{idPresenza}")
+    public String chiudiGiornata(@PathVariable("idPresenza") Long idPresenza, RedirectAttributes redirectAttributes){
+        try {
+            if (presenzaService.chiudiGiornata(idPresenza)){
+                redirectAttributes.addFlashAttribute("successMessage", "Giornata chiusa " +
+                        "correttamente");
+                return "redirect:/presenza/calendar";
+            }else {
+                redirectAttributes.addFlashAttribute("successMessage", "Giornata riaperta " +
+                        "correttamente");
+                return "redirect:/presenza/calendar";
+            }
+        }catch (ArithmeticException ex){
+            redirectAttributes.addFlashAttribute("errorMessage", "Giornata non chiudibile, non svolte" +
+                    " 8 ore");
+            return "redirect:/presenza/calendar";
+        }
+    }
 }

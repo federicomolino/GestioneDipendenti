@@ -38,6 +38,17 @@ public class Presenza {
     @JoinColumn(name = "id_dipendente")
     private Dipendente dipendente;
 
+    private boolean chiudiGiornata;
+
+    public boolean isChiudiGiornata() {
+        return chiudiGiornata;
+    }
+
+    public boolean setChiudiGiornata(boolean chiudiGiornata) {
+        this.chiudiGiornata = chiudiGiornata;
+        return chiudiGiornata;
+    }
+
     public LocalDate getDataFineFerie() {
         return dataFineFerie;
     }

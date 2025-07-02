@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 
 @Service
@@ -24,6 +25,8 @@ public class PresenzaService {
 
     @Autowired
     private ContrattoRepository contrattoRepository;
+
+    private static final Logger log = Logger.getLogger(PresenzaService.class.getName());
 
 
     public Presenza addPreseza (Presenza presenza, Principal principal) throws DataFormatException{
@@ -49,6 +52,7 @@ public class PresenzaService {
         LocalDate fineFerie = presenza.getDataFineFerie();
 
         if (inizioFerie.isAfter(fineFerie)){
+            log.warning("Data inizio superiore a quella di fine");
             throw new IllegalArgumentException("Data inizio superiore a quella di fine");
         }
 
@@ -57,6 +61,7 @@ public class PresenzaService {
             //Verifico se la data è già presente nel db per l'utente
             boolean presenzaData = presenzaRepository.existsByDataAndDipendente(i, dipendente);
             if (presenzaData){
+                log.warning("Riga già presente nel db");
                 throw new IllegalArgumentException("Riga già presente nel db");
             }
             //Verifico se esiste un contratto per il dipendente
@@ -73,11 +78,13 @@ public class PresenzaService {
                 p.setDipendente(dipendente);
                 contrattoDipendente.get().setOreFerieUtilizzate(contrattoDipendente.get().getOreFerieUtilizzate()+8);
                 if (contrattoDipendente.get().getOreFerieUtilizzate() > contrattoDipendente.get().getOreFerieTotali()){
+                    log.warning("Limite massimo di ore ferie superato");
                     throw new ArithmeticException("Limite massimo di ore ferie superato");
                 }
                 contrattoRepository.save(contrattoDipendente.get());
                 presenzaRepository.save(p);
             }else {
+                log.warning("L'utente non ha nessun contratto!!");
                 throw new IllegalArgumentException("L'utente non ha nessun contratto!!");
             }
         }
@@ -90,6 +97,7 @@ public class PresenzaService {
         LocalTime oraEntrata = presenza.getOraEntrata();
 
         if (oraUscita.isAfter(oraEntrata)){
+            log.warning("Ora uscita più grande dell'oraEntrata");
             throw new DataFormatException("Ora uscita più grande dell'oraEntrata");
         }
 
@@ -118,6 +126,7 @@ public class PresenzaService {
             LocalTime oraEntrataInput = presenza.getOraEntrata();
 
             if (oraUscitaInput.isAfter(oraEntrataInput)){
+                log.warning("Ora uscita più grande dell'oraEntrata");
                 throw new DataFormatException("Ora uscita più grande dell'oraEntrata");
             }
 
@@ -145,5 +154,36 @@ public class PresenzaService {
         presenzaEsistente.setModalita(presenza.getModalita());
         presenzaEsistente.setStato(presenza.getStato());
         return presenzaRepository.save(presenzaEsistente);
+    }
+
+    public boolean chiudiGiornata(Long idPresenza) throws ArithmeticException{
+        Presenza presenza = presenzaRepository.findById(idPresenza).get();
+        if (presenza.isChiudiGiornata()){
+            presenza.setChiudiGiornata(false);
+            presenzaRepository.save(presenza);
+            return false;
+        }
+
+        if (presenza.getStato().equals(StatoPresenza.PRESENTE) ||
+                presenza.getStato().equals(StatoPresenza.PERMESSO)){
+
+            LocalTime oraEntrata = presenza.getOraEntrata();
+            LocalTime oraUscita = presenza.getOraUscita();
+
+            Duration durataGionarta = Duration.between(oraEntrata,oraUscita);
+            float durataGionartaInMinuti = durataGionarta.toHours();
+            if (durataGionartaInMinuti < 8){
+                log.warning("Giornata non chiudibile, meno di 8 ore fatte!!");
+                throw new ArithmeticException("Giornata non chiudibile");
+            }else {
+                presenza.setChiudiGiornata(true);
+                presenzaRepository.save(presenza);
+                return true;
+            }
+        }else {
+            presenza.setChiudiGiornata(true);
+            presenzaRepository.save(presenza);
+            return true;
+        }
     }
 }

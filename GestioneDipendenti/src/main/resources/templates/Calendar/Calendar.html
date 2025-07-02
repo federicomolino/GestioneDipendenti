@@ -15,6 +15,16 @@
 
       <div class="container mt-5">
 
+        <div th:if="${successMessage}" class="alert alert-success d-flex justify-content-between mt-2 col-4 mx-auto">
+          <span th:text="${successMessage}">Modifiche effettuate correttamente!</span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger d-flex justify-content-between mt-2 col-4 mx-auto">
+          <span th:text="${errorMessage}">Modifiche non effettuate</span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
         <div>
           <h2 class="mb-4 text-center">Presenze Mese Corrente</h2>
         </div>
@@ -46,6 +56,7 @@
               <th>Modalità</th>
               <th>Stato</th>
               <th>Modifica</th>
+              <th>Completa Giornata</th>
             </tr>
             </thead>
             <tbody>
@@ -70,10 +81,33 @@
               <td>
                 <a th:href="@{/presenza/calendar/{idPresenza}(idPresenza=${presenza.idPresenza})}" class="btn btn-sm btn-outline-primary">Modifica</a>
               </td>
+              <td class="align-middle text-center">
+                <form method="post" th:object="${formChiudiGionata}"
+                      th:action="@{/presenza/calendar/chiudi-giornata/{idPresenza}(idPresenza=${presenza.idPresenza})}">
+                  <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox"
+                             th:id="'switch-' + ${presenza.idPresenza}"
+                             role="switch"
+                             th:checked="${presenza.chiudiGiornata == true}"
+                             onchange="this.form.submit()">
+                      <label class="form-check-label small text-muted"
+                             th:for="'switch-' + ${presenza.idPresenza}"
+                             data-bs-toggle="tooltip"
+                             data-bs-placement="top"
+                             title="Attiva per chiudere la giornata lavorativa">
+                        Chiudi
+                      </label>
+                    </div>
+                    <span class="badge rounded-pill bg-secondary" id="giornataChiusa">Giornata aperta</span>
+                    <span class="badge rounded-pill bg-success" id="giornataAperta" style="display: none;">Giornata Chiusa</span>
+                  </div>
+                </form>
+              </td>
             </tr>
 
             <tr th:if="${#lists.isEmpty(listaPresenze)}">
-              <td colspan="6" class="text-center text-muted">Nessuna presenza registrata per questo mese.</td>
+              <td colspan="8" class="text-center text-muted">Nessuna presenza registrata per questo mese.</td>
             </tr>
             </tbody>
           </table>
@@ -84,5 +118,7 @@
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--Importo script-->
+<script src ="/Calendar.js"></script>
 </body>
 </html>
