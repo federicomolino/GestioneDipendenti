@@ -87,20 +87,20 @@
                   <div class="d-flex flex-column align-items-center justify-content-center gap-2">
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox"
-                             th:id="'switch-' + ${presenza.idPresenza}"
+                             th:id="'giornataSwitch-' + ${presenza.idPresenza}"
                              role="switch"
                              th:checked="${presenza.chiudiGiornata == true}"
                              onchange="this.form.submit()">
                       <label class="form-check-label small text-muted"
-                             th:for="'switch-' + ${presenza.idPresenza}"
+                             th:for="'giornataSwitch-' + ${presenza.idPresenza}"
                              data-bs-toggle="tooltip"
                              data-bs-placement="top"
                              title="Attiva per chiudere la giornata lavorativa">
                         Chiudi
                       </label>
                     </div>
-                    <span class="badge rounded-pill bg-secondary" id="giornataChiusa">Giornata aperta</span>
-                    <span class="badge rounded-pill bg-success" id="giornataAperta" style="display: none;">Giornata Chiusa</span>
+                    <span class="badge rounded-pill bg-secondary giornataChiusa">Giornata aperta</span>
+                    <span class="badge rounded-pill bg-success giornataAperta" style="display: none;">Giornata Chiusa</span>
                   </div>
                 </form>
               </td>

@@ -1,18 +1,22 @@
-const giornataChiusa = document.getElementById("giornataChiusa");
-const giornataAperta = document.getElementById("giornataAperta");
-const switchCheckbox = document.querySelector(".form-check-input");
+document.querySelectorAll(".form-check-input").forEach((checkbox) => {
+    const container = checkbox.closest(".d-flex");
+    const badgeChiusa = container.querySelector(".giornataChiusa");
+    const badgeAperta = container.querySelector(".giornataAperta");
 
-function aggiornaBadge(){
-    if(switchCheckbox.checked){
-        giornataChiusa.style.display = "none";
-        giornataAperta.style.display = "inline-block";
-    }else{
-        giornataChiusa.style.display = "inline-block";
-        giornataAperta.style.display = "none";
+    // Funzione per aggiornare il badge in base allo stato dello switch
+    function aggiornaBadge() {
+        if (checkbox.checked) {
+            badgeChiusa.style.display = "none";
+            badgeAperta.style.display = "inline-block";
+        } else {
+            badgeChiusa.style.display = "inline-block";
+            badgeAperta.style.display = "none";
+        }
     }
-}
 
-aggiornaBadge();
+    // Imposta lo stato iniziale
+    aggiornaBadge();
 
-// Riascolta l'evento ogni volta che cambia
-switchCheckbox.addEventListener("change",aggiornaBadge);
+    // Riascolta il cambiamento dello switch
+    checkbox.addEventListener("change", aggiornaBadge);
+});
