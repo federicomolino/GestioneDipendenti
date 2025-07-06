@@ -198,4 +198,9 @@ public class PresenzaController {
             return "redirect:/presenza/calendar";
         }
     }
+
+    @GetMapping("/info-file")
+    public String showInfoFile(){
+        return "Calendar/infoFile";
+    }
 }
