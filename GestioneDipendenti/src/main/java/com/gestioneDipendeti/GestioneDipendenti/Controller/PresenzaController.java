@@ -13,11 +13,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 
 @Controller
@@ -35,6 +37,8 @@ public class PresenzaController {
 
     @Autowired
     private ContrattoRepository contrattoRepository;
+
+    private static final Logger logPresenzaController = Logger.getLogger(PresenzaService.class.getName());
 
 
     @PostMapping("/addPresenza")
@@ -152,6 +156,8 @@ public class PresenzaController {
         model.addAttribute("presenza",presenzaSelezionata);
         return "Calendar/Calendar";
     }
+
+
     @PostMapping("/calendar/chiudi-giornata/{idPresenza}")
     public String chiudiGiornata(@PathVariable("idPresenza") Long idPresenza, RedirectAttributes redirectAttributes){
         try {
@@ -167,6 +173,28 @@ public class PresenzaController {
         }catch (ArithmeticException ex){
             redirectAttributes.addFlashAttribute("errorMessage", "Giornata non chiudibile, non svolte" +
                     " 8 ore");
+            return "redirect:/presenza/calendar";
+        }
+    }
+
+    @PostMapping("/add-presenza/file")
+    public String addPresenzaFile(@RequestParam("file")MultipartFile file, RedirectAttributes redirectAttributes, Principal
+                                  principal){
+        if (file.isEmpty()){
+            redirectAttributes.addFlashAttribute("errorMessage","File vuoto, non è possibile" +
+                    " procedere con l'inserimento");
+            logPresenzaController.warning("Il file inserito è vuoto!");
+            return "redirect:/presenza/calendar";
+        }
+
+        try {
+            presenzaService.inserisciFilePresenze(file,principal);
+            redirectAttributes.addFlashAttribute("successMessage","Presenze inserite correttamente");
+            logPresenzaController.info("File inserito correttamente!");
+            return "redirect:/presenza/calendar";
+        }catch (Exception e){
+            redirectAttributes.addFlashAttribute("errorMessage","Qualcosa andato storto durante" +
+                    " l'inserimento del file");
             return "redirect:/presenza/calendar";
         }
     }

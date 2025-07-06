@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface PresenzaRepository extends JpaRepository<Presenza, Long> {
 
@@ -24,4 +25,7 @@ public interface PresenzaRepository extends JpaRepository<Presenza, Long> {
     List<Presenza> findBySearchData(@Param("dipendente") Dipendente dipendente, @Param("data") String data);
 
     boolean existsByDataAndDipendente(LocalDate data, Dipendente dipendente);
+
+    @Query("select p from Presenza p where p.data = :data")
+    Optional<Presenza> findByData(@Param("data") LocalDate data);
 }

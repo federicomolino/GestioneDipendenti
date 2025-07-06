@@ -5,11 +5,17 @@ import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.PresenzaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
@@ -185,5 +191,90 @@ public class PresenzaService {
             presenzaRepository.save(presenza);
             return true;
         }
+    }
+
+    public void inserisciFilePresenze(MultipartFile file, Principal principal) throws IOException {
+        //Recupero il Dipendente
+
+        List<Presenza> presenzaList = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+        String line;
+        //Salto la prima riga
+        reader.readLine();
+
+        //Leggiamo file fino a quando la riga non sarà null
+        while ((line = reader.readLine()) != null){
+            String[] parts = line.split(",");
+            //Almeno tre elementi nel file
+            if (parts.length > 3){
+                Presenza presenza = new Presenza();
+
+                //Verifico se la datà è già presente a DB
+                LocalDate data = LocalDate.parse(parts[0]);
+                Optional<Presenza> presenzaGiornata = presenzaRepository.findByData(data);
+                if (presenzaGiornata.isPresent()){
+                    log.warning("Giornata già presente a DB " + data);
+                    throw new IOException("Giornata già presente");
+                }
+                presenza.setData(data);
+
+                //Verifico la modalità
+                String modalita = parts[1];
+                if (!modalita.equals("UFFICIO") && !modalita.equals("FUORISEDE")
+                        && !modalita.equals("SMARTWORKING")){
+                    log.warning("Modalità inserita errata");
+                    throw new IOException("Modalità inserita errata");
+                }
+                presenza.setModalita(parts[1]);
+
+                //Verifico stato
+                String stato = parts[2];
+                if (!isValido(stato)) {
+                    log.warning("Stato inserito non valido: " + stato);
+                    throw new IOException("Stato inserito non valido");
+                }
+                StatoPresenza statoPresenzaEnum = StatoPresenza.valueOf(stato);
+                presenza.setStato(statoPresenzaEnum);
+
+                //Caso in cui vengano inserite ferie
+                if (statoPresenzaEnum.equals(StatoPresenza.FERIE)){
+                    presenza.setOraEntrata(null);
+                    presenza.setOraUscita(null);
+
+                    LocalDate dataInizioFerie = LocalDate.parse(parts[6]);
+                    LocalDate dataFineFerie = LocalDate.parse(parts[5]);
+                    if (dataInizioFerie.isAfter(dataFineFerie)){
+                        log.warning("Date ferie inserite non valide");
+                        throw new IOException("Date ferie inserite non valide");
+                    }else {
+                        presenza.setDataInizioFerie(dataInizioFerie);
+                        presenza.setDataFineFerie(dataFineFerie);
+                    }
+                }
+                //Caso in cui venga inserite Permesso
+                if (statoPresenzaEnum.equals(StatoPresenza.PERMESSO) || statoPresenzaEnum.equals(StatoPresenza.PRESENTE)){
+                    presenza.setDataInizioFerie(null);
+                    presenza.setDataFineFerie(null);
+
+                    LocalTime oraEntrata = LocalTime.parse(parts[3]);
+                    LocalTime oraUscita = LocalTime.parse(parts[4]);
+                    if (oraEntrata.isAfter(oraUscita)){
+                        log.warning("Ora entrata e ora uscita non valida");
+                        throw new IOException("Ora entrata e ora uscita non valida");
+                    }else {
+                        presenza.setOraEntrata(oraEntrata);
+                        presenza.setOraUscita(oraUscita);
+                    }
+
+                }
+                presenza.setDipendente(loginService.recuperoDipendente(principal));
+                presenza.setChiudiGiornata(Boolean.parseBoolean(parts[7]));
+                presenzaRepository.save(presenza);
+            }
+        }
+    }
+
+    private boolean isValido(String stato) {
+        return stato.equals("PERMESSO") || stato.equals("PRESENTE") || stato.equals("FERIE");
     }
 }
