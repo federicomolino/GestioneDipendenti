@@ -268,7 +268,13 @@ public class PresenzaService {
 
                 }
                 presenza.setDipendente(loginService.recuperoDipendente(principal));
-                presenza.setChiudiGiornata(Boolean.parseBoolean(parts[7]));
+                String chiudiGiornata = parts[7];
+                if (chiudiGiornata.isEmpty()){
+                    presenza.setChiudiGiornata(Boolean.FALSE);
+                }else {
+                    presenza.setChiudiGiornata(Boolean.parseBoolean(chiudiGiornata));
+                }
+
                 presenzaRepository.save(presenza);
             }
         }
