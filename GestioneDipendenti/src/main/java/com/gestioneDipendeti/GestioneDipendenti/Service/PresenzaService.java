@@ -99,10 +99,10 @@ public class PresenzaService {
     public void addPresenzaConPermesso(Presenza presenza, Principal principal) throws DataFormatException {
         Utente utente = loginService.recuperoUtente(principal);
         Dipendente dipendente = utente.getDipendente();
-        LocalTime oraUscita = presenza.getOraUscita();
         LocalTime oraEntrata = presenza.getOraEntrata();
+        LocalTime oraUscita = presenza.getOraUscita();
 
-        if (oraUscita.isAfter(oraEntrata)){
+        if (oraEntrata.isAfter(oraUscita)){
             log.warning("Ora uscita più grande dell'oraEntrata");
             throw new DataFormatException("Ora uscita più grande dell'oraEntrata");
         }
@@ -111,7 +111,7 @@ public class PresenzaService {
         Optional<Contratto> contrattoDipendente = contrattoRepository.findBydipendente(dipendente);
         if(contrattoDipendente.isPresent()){
             //Restituisce il totale dei minuti
-            Duration durataTotalePermesso = Duration.between(oraUscita,oraEntrata);
+            Duration durataTotalePermesso = Duration.between(oraEntrata,oraUscita);
             // Converto la durata divindendo per 60 per prendermi le ore e metterlo in float
             float oreTotaliPermessoConvertitoInFloat = durataTotalePermesso.toMinutes() / 60.0f;
             contrattoDipendente.get().setOreFerieUtilizzate(contrattoDipendente.get().getOreFerieUtilizzate() + oreTotaliPermessoConvertitoInFloat);

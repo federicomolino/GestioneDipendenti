@@ -206,25 +206,26 @@
 
                                         <!--Ore di ferie-->
                                         <div id="permessoInput" style="display: none;">
+
                                             <div class="row mt-3">
                                                 <div class="col-sm-2 fw-bold">Dalle:</div>
+                                                <input type="time" class="col-5 ms-1" th:field="*{oraEntrata}">
+
+                                                <div th:if="${oraError}" class="alert alert-warning
+                                                    d-flex justify-content-between mt-2 col-8 ms-3">
+                                                    <span th:text="${oraError}">Ora inserita non valida</span>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mt-3">
+                                                <div class="col-sm-2 fw-bold">Alle:</div>
                                                 <input type="time" class="col-5" th:field="*{oraUscita}">
 
                                                 <div th:if="${oraError}" class="alert alert-warning
                                                 d-flex justify-content-between mt-2 col-8 ms-3">
                                                     <span th:text="${oraError}">Ora inserita non valida</span>
                                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                                </div>
-
-                                                <div class="row mt-3">
-                                                    <div class="col-sm-2 fw-bold">Alle:</div>
-                                                    <input type="time" class="col-5 ms-1" th:field="*{oraEntrata}">
-
-                                                    <div th:if="${oraError}" class="alert alert-warning
-                                                    d-flex justify-content-between mt-2 col-8 ms-3">
-                                                        <span th:text="${oraError}">Ora inserita non valida</span>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
