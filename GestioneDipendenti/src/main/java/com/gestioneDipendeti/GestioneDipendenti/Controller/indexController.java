@@ -46,7 +46,7 @@ public class indexController {
 
         model.addAttribute("formAddPresenza", new Presenza());
         model.addAttribute("Dipendete", dipendente);
-        model.addAttribute("presenzaGiornaliera", presenzaRepository.findByPresenza(dipendente));
+        model.addAttribute("presenzaGiornaliera", presenzaRepository.findTopByDipendenteOrderByIdPresenzaDesc(dipendente));
 
         Optional<Contratto> contrattoDipendente = contrattoRepository.findBydipendente(dipendente);
 

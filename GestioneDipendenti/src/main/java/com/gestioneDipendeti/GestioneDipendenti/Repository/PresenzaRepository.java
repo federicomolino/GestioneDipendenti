@@ -29,6 +29,12 @@ public interface PresenzaRepository extends JpaRepository<Presenza, Long> {
     @Query("select p from Presenza p where p.data = :data")
     Optional<Presenza> findByData(@Param("data") LocalDate data);
 
-    @Query("SELECT p FROM Presenza p WHERE p.dipendente = :dipendente")
-    List<Presenza> findByAllPresenza(@Param("dipendente")Dipendente dipendente);
+    @Query("select p from Presenza p where p.data = :data")
+    List<Presenza> findByDataList(@Param("data") LocalDate data);
+
+    /*Quello che fa
+    SELECT p.* FROM db_gestionedipendenti.presenza p
+    WHERE p.id_dipendente = 1
+    order by p.id_presenza desc;*/
+    Presenza findTopByDipendenteOrderByIdPresenzaDesc(Dipendente dipendente);
 }

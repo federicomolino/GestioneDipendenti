@@ -164,33 +164,48 @@ public class PresenzaService {
 
     public boolean chiudiGiornata(Long idPresenza) throws ArithmeticException{
         Presenza presenza = presenzaRepository.findById(idPresenza).get();
+        //presenti più date uguali
+        List<Presenza> presenzaList = presenzaRepository.findByDataList(presenza.getData());
+
         if (presenza.isChiudiGiornata()){
-            presenza.setChiudiGiornata(false);
-            presenzaRepository.save(presenza);
-            return false;
+            for (int i = 0; i < presenzaList.size(); i ++){
+                Presenza presenzaRecuperata = presenzaList.get(i);
+                presenzaList.get(i).setChiudiGiornata(false);
+                presenzaRepository.save(presenzaRecuperata);
+                if (i == presenzaList.size()-1){
+                    return false;
+                }
+            }
         }
 
-        if (presenza.getStato().equals(StatoPresenza.PRESENTE) ||
-                presenza.getStato().equals(StatoPresenza.PERMESSO)){
-
-            LocalTime oraEntrata = presenza.getOraEntrata();
-            LocalTime oraUscita = presenza.getOraUscita();
-
-            Duration durataGionarta = Duration.between(oraEntrata,oraUscita);
-            float durataGionartaInMinuti = durataGionarta.toHours();
-            if (durataGionartaInMinuti < 8){
-                log.warning("Giornata non chiudibile, meno di 8 ore fatte!!");
-                throw new ArithmeticException("Giornata non chiudibile");
-            }else {
-                presenza.setChiudiGiornata(true);
-                presenzaRepository.save(presenza);
-                return true;
-            }
-        }else {
+        if (presenza.getStato().equals(StatoPresenza.FERIE)){
             presenza.setChiudiGiornata(true);
             presenzaRepository.save(presenza);
             return true;
         }
+
+        //Più date uguali
+        float durataTotaleGiornata = 0;
+        for (Presenza presenzePerData : presenzaList){
+            LocalTime oraEntrata = presenzePerData.getOraEntrata();
+            LocalTime oraUscita = presenzePerData.getOraUscita();
+            Duration durataGionarta = Duration.between(oraEntrata,oraUscita);
+            durataTotaleGiornata = durataGionarta.toHours();
+        }
+        if (durataTotaleGiornata >= 8){
+            for (int i = 0; i<presenzaList.size(); i ++){
+                presenzaList.get(i).setChiudiGiornata(true);
+                presenzaRepository.save(presenzaList.get(i));
+                if (i == presenzaList.size()-1){
+                    return true;
+                }
+            }
+        }else {
+            log.warning("Giornate non chiudibili, meno di 8 ore fatte!!");
+            throw new ArithmeticException("Giornata non chiudibile");
+        }
+        return false;
+
     }
 
     public void inserisciFilePresenze(MultipartFile file, Principal principal) throws IOException {

@@ -3,6 +3,7 @@ package com.gestioneDipendeti.GestioneDipendenti.Controller;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Presenza;
+import com.gestioneDipendeti.GestioneDipendenti.Entity.StatoPresenza;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.PresenzaRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
@@ -68,7 +69,8 @@ public class PresenzaController {
             }
         }
 
-        if (presenzaGiornaliera != null){
+        if (presenzaGiornaliera != null &&
+                !presenzaGiornaliera.getStato().equals(StatoPresenza.PERMESSO)){
             redirectAttributes.addFlashAttribute("presenzaError","Timbratura già effettuata");
             return "redirect:/";
         }
