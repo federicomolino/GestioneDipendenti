@@ -1,5 +1,6 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -26,6 +27,7 @@ public class Ruolo {
 
     @ManyToOne
     @JoinColumn(name = "id_dipendente")
+    @JsonBackReference
     private Dipendente dipendente;
 
     public Long getIdRuolo() {

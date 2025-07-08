@@ -1,5 +1,6 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -33,6 +34,7 @@ public class Contratto {
 
     @ManyToOne
     @JoinColumn(name = "id_dipendente")
+    @JsonBackReference
     private Dipendente dipendente;
 
     private float oreFerieTotali;

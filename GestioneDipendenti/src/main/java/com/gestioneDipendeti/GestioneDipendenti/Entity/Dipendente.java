@@ -1,5 +1,7 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -26,12 +28,15 @@ public class Dipendente {
     private String luogoDiNascita;
 
     @OneToMany(mappedBy = "dipendente")
+    @JsonManagedReference
     List<Contratto> contratto;
 
     @OneToMany(mappedBy = "dipendente")
+    @JsonIgnore
     List<Presenza> presenza;
 
     @OneToMany(mappedBy = "dipendente")
+    @JsonManagedReference
     List<Ruolo> ruolo;
 
     @ManyToMany
@@ -44,6 +49,7 @@ public class Dipendente {
 
     @OneToOne
     @JoinColumn(name = "idUtente")
+    @JsonManagedReference
     private Utente utente;
 
     public Utente getUtente() {
