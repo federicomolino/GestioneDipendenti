@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Controller
@@ -46,7 +47,12 @@ public class indexController {
 
         model.addAttribute("formAddPresenza", new Presenza());
         model.addAttribute("Dipendete", dipendente);
-        model.addAttribute("presenzaGiornaliera", presenzaRepository.findTopByDipendenteOrderByIdPresenzaDesc(dipendente));
+        Presenza p = presenzaRepository.findTopByDipendenteOrderByIdPresenzaDesc(dipendente);
+        if (p.getData().isEqual(LocalDate.now())){
+            model.addAttribute("presenzaGiornaliera", p);
+        }else {
+            model.addAttribute("presenzaGiornaliera", null);
+        }
 
         Optional<Contratto> contrattoDipendente = contrattoRepository.findBydipendente(dipendente);
 
