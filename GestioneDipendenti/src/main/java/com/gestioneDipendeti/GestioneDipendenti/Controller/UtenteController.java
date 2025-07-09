@@ -55,7 +55,7 @@ UtenteController {
 
     @PostMapping("/nuovoUtente")
     public String addNuovoUtente(@Valid @ModelAttribute("formNewUtente") NuovoUtenteDTO nuovoUtenteDTO, BindingResult bindingResult,
-                                 @RequestParam(name = "ruolo", required = false)List<String> ruoli){
+                                 @RequestParam(name = "ruolo", required = false)List<String> ruoli, RedirectAttributes redirectAttributes){
         if (bindingResult.hasErrors()){
             return "Utente/newUtente";
         }
@@ -86,10 +86,13 @@ UtenteController {
         dipendenteRepository.save(utenteService.addDipendente(nuovoUtenteDTO));
         try{
             utenteService.invioEmailCreazioneUtente(nuovoUtenteDTO.getEmail());
+            redirectAttributes.addFlashAttribute("successMessage","Utente creato correttamente");
         }catch (AuthenticationException ex){
-            return "redirect:/";
+            redirectAttributes.addFlashAttribute("warningMessage","Utente creato correttamente," +
+                    " mail non inviata!");
+            return "redirect:/utente/nuovoUtente";
         }
-        return "redirect:/";
+        return "redirect:/utente/nuovoUtente";
     }
 
     @PostMapping("/cancellaUtente/{IdUtente}")
