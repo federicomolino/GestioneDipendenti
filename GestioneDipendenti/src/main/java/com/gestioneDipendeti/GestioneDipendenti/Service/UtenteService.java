@@ -12,6 +12,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import javax.naming.AuthenticationException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,11 +103,15 @@ public class UtenteService {
     }
 
     //InvioEmail
-    public void invioEmailCreazioneUtente(String email){
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Registrazione Confermata!");
-        message.setText("Ciao, confermiamo la registrazione");
-        javaMailSender.send(message);
+    public void invioEmailCreazioneUtente(String email) throws AuthenticationException {
+        try{
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setSubject("Registrazione Confermata!");
+            message.setText("Ciao, confermiamo la registrazione");
+            javaMailSender.send(message);
+        }catch (Exception ex){
+            throw new AuthenticationException();
+        }
     }
 }
