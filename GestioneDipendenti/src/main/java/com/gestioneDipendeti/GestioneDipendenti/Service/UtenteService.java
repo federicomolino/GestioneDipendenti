@@ -35,11 +35,13 @@ public class UtenteService {
     private JavaMailSender javaMailSender;
 
     public Dipendente addDipendente(NuovoUtenteDTO nuovoUtenteDTO){
+        Utente utenteCreato = utenteRepository.findTopByOrderByIdUtenteDesc();
         Dipendente nuovoDipendente = new Dipendente();
         nuovoDipendente.setNome(nuovoUtenteDTO.getNome());
         nuovoDipendente.setCognome(nuovoUtenteDTO.getCognome());
         nuovoDipendente.setDataDiNascita(nuovoUtenteDTO.getDataDiNascita());
         nuovoDipendente.setLuogoDiNascita(nuovoUtenteDTO.getLuogoDiNascita());
+        nuovoDipendente.setUtente(utenteCreato);
         return nuovoDipendente;
     }
 

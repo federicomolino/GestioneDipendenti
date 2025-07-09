@@ -1,4 +1,4 @@
-package com.gestioneDipendeti.GestioneDipendenti.RestAPIUtente;
+package com.gestioneDipendeti.GestioneDipendenti.RestAPI;
 
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Utente;

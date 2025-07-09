@@ -1,5 +1,6 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -16,12 +17,14 @@ public class Dipartimento {
     @NotBlank(message = "Non può essere vuoto")
     private String dipartimento;
 
+    @JsonIgnore
     private int dipendentiPresenti;
 
     @NotBlank(message = "Non può essere vuoto")
     private String descrizioneDipartimento;
 
     @ManyToMany(mappedBy = "dipartimento")
+    @JsonIgnore
     private List<Dipendente> dipendente;
 
     public Long getIdDipartimento() {

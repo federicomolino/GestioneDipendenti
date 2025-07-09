@@ -1,6 +1,7 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -11,10 +12,11 @@ public class Utente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long IdUtente;
+    private Long idUtente;
 
     private String username;
 
+    @JsonIgnore
     private String password;
 
     @Column(unique = true)
@@ -27,6 +29,7 @@ public class Utente {
             inverseJoinColumns = @JoinColumn(name = "idRole")
     )
     @JsonManagedReference
+    @JsonIgnore
     private List<Role> role;
 
     @OneToOne(mappedBy = "utente")
@@ -42,11 +45,11 @@ public class Utente {
     }
 
     public Long getIdUtente() {
-        return IdUtente;
+        return idUtente;
     }
 
     public void setIdUtente(Long idUtente) {
-        IdUtente = idUtente;
+        idUtente = idUtente;
     }
 
     public String getUsername() {

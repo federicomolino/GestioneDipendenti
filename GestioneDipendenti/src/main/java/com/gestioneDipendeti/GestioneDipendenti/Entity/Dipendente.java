@@ -28,7 +28,7 @@ public class Dipendente {
     private String luogoDiNascita;
 
     @OneToMany(mappedBy = "dipendente")
-    @JsonManagedReference
+    @JsonIgnore
     List<Contratto> contratto;
 
     @OneToMany(mappedBy = "dipendente")
@@ -36,7 +36,7 @@ public class Dipendente {
     List<Presenza> presenza;
 
     @OneToMany(mappedBy = "dipendente")
-    @JsonManagedReference
+    @JsonIgnore
     List<Ruolo> ruolo;
 
     @ManyToMany
@@ -45,6 +45,7 @@ public class Dipendente {
             joinColumns = @JoinColumn(name = "idDipendente"),
             inverseJoinColumns = @JoinColumn(name = "idDipartimento")
     )
+    @JsonIgnore
     private List<Dipartimento> dipartimento;
 
     @OneToOne
