@@ -16,6 +16,7 @@ import javax.naming.AuthenticationException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UtenteService {
@@ -112,6 +113,25 @@ public class UtenteService {
             javaMailSender.send(message);
         }catch (Exception ex){
             throw new AuthenticationException();
+        }
+    }
+
+    //Verifico esistenza username nel sistema
+    public boolean emailExist(String email){
+        Optional<Utente> utenteMail = utenteRepository.findByEmail(email);
+        if (utenteMail.isPresent()){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public boolean usernameExist(String username){
+        Optional<Utente> utenteUsername = utenteRepository.findByUsername(username);
+        if (utenteUsername.isPresent()){
+            return true;
+        }else {
+            return false;
         }
     }
 }

@@ -67,16 +67,15 @@ UtenteController {
                     "l'utente non può essere minorenne");
         }
 
+
         //Verifica Username
-        Optional<Utente> utente = utenteRepository.findByUsername(nuovoUtenteDTO.getUsername());
-        if (utente.isPresent()){
+        if (utenteService.usernameExist(nuovoUtenteDTO.getUsername())){
             bindingResult.rejectValue("erroreUsername","erroreUsername","Username già presente nel" +
                     "sistema");
         }
 
         //Verifica email
-        Optional<Utente> utenteMail = utenteRepository.findByEmail(nuovoUtenteDTO.getEmail());
-        if (utenteMail.isPresent()){
+        if (utenteService.emailExist(nuovoUtenteDTO.getEmail())){
             bindingResult.rejectValue("email","erroreEmail","Email già presente nel" +
                     "sistema");
         }

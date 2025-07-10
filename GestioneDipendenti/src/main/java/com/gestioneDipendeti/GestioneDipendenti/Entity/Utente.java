@@ -1,7 +1,6 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -16,7 +15,6 @@ public class Utente {
 
     private String username;
 
-    @JsonIgnore
     private String password;
 
     @Column(unique = true)
@@ -29,7 +27,6 @@ public class Utente {
             inverseJoinColumns = @JoinColumn(name = "idRole")
     )
     @JsonManagedReference
-    @JsonIgnore
     private List<Role> role;
 
     @OneToOne(mappedBy = "utente")
