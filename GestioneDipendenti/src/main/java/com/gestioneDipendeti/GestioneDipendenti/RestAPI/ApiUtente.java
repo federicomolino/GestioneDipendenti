@@ -89,10 +89,12 @@ public class ApiUtente {
         nuovoUtenteDTO.setUsername(utenteDTO.getUsername());
         nuovoUtenteDTO.setPassword(utenteDTO.getPassword());
         nuovoUtenteDTO.setEmail(utenteDTO.getEmail());
-        for (RoleDTO roleDto : roleDTO){
-            ruoliPassati.add(roleDto.getNomeRole());
+        if (roleDTO != null) {
+            for (RoleDTO roleDto : roleDTO){
+                ruoliPassati.add(roleDto.getNomeRole());
+            }
+            nuovoUtenteDTO.setRuoli(ruoliPassati);
         }
-        nuovoUtenteDTO.setRuoli(ruoliPassati);
         try {
             utenteRepository.save(utenteService.addUtente(nuovoUtenteDTO,ruoliPassati));
             dipendenteRepository.save(utenteService.addDipendente(nuovoUtenteDTO));

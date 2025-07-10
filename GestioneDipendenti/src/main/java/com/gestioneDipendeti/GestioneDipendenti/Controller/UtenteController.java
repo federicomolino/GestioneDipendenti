@@ -55,8 +55,12 @@ UtenteController {
 
     @PostMapping("/nuovoUtente")
     public String addNuovoUtente(@Valid @ModelAttribute("formNewUtente") NuovoUtenteDTO nuovoUtenteDTO, BindingResult bindingResult,
-                                 @RequestParam(name = "ruolo", required = false)List<String> ruoli, RedirectAttributes redirectAttributes){
+                                 @RequestParam(name = "ruolo", required = false)List<String> ruoli, RedirectAttributes redirectAttributes,
+                                Model model){
         if (bindingResult.hasErrors()){
+            List<Utente> utenti = utenteRepository.findAll();
+            model.addAttribute("formNewUtente", new NuovoUtenteDTO());
+            model.addAttribute("listUtenti",utenti);
             return "Utente/newUtente";
         }
 

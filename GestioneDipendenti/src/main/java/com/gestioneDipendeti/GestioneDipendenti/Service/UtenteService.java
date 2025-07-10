@@ -63,6 +63,14 @@ public class UtenteService {
         nuovoUtente.setPassword("{noop}" + nuovoUtenteDTO.getPassword());
         nuovoUtente.setEmail(nuovoUtenteDTO.getEmail());
 
+        //Caso in cui non venga passato nessun ruolo
+        if (ruoli == null || ruoli.isEmpty()){
+            List<Role> listaRuoliDefault = new ArrayList<>();
+            Role ruolo = roleRepository.findByNomeRole("USER").get();
+            listaRuoliDefault.add(ruolo);
+            nuovoUtente.setRole(listaRuoliDefault);
+            return nuovoUtente;
+        }
         //Converto stringa nell'oggetto ruolo
         List<Role> listaRuoli = new ArrayList<>();
         for (String nome : ruoli){
