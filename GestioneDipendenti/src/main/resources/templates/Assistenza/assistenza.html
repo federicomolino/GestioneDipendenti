@@ -15,6 +15,22 @@
             <h5>Richiedi Assitenza</h5>
         </div>
     </div>
+    <!--Messaggi successo ed errore-->
+    <div th:if="${successMessage}" class="alert alert-success d-flex justify-content-between mt-2 col-4 mx-auto">
+        <span th:text="${successMessage}">Richiesta inviata correttamente!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger d-flex justify-content-between mt-2 col-4 mx-auto">
+        <span th:text="${errorMessage}">Errore durante l'invio della richiesta</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${infoMessage}" class="alert alert-warning d-flex justify-content-between mt-2 col-4 mx-auto">
+        <span th:text="${infoMessage}">Richiesta inviata, mail non andata a buon fine</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="row col-10">
         <form method="post" th:action="@{/assistenza}">
             <!--Responsabile a cui inviare richiesta-->
