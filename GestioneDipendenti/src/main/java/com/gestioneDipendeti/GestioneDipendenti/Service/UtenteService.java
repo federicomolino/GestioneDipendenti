@@ -103,11 +103,18 @@ public class UtenteService {
 
     public void cancellaUtente(Long idUtente){
         Utente utente = utenteRepository.findById(idUtente).get();
+        utente.setDipendente(null);
+        //Salvo utente senza nessuna referenza di dipendente
+        utenteRepository.save(utente);
+        cancellaDipendente(idUtente);
         utenteRepository.delete(utente);
     }
 
     public void cancellaDipendente(Long idUtente){
-        Dipendente dipendente = dipendenteRepository.findById(idUtente).get();
+        Dipendente dipendente = dipendenteRepository.findByUtenteId(idUtente);
+        dipendente.setUtente(null);
+        //Salvo dipendente senza nessuna referenza di utente
+        dipendenteRepository.save(dipendente);
         dipendenteRepository.delete(dipendente);
     }
 

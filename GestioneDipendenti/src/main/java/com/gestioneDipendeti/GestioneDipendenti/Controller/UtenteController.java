@@ -101,7 +101,6 @@ UtenteController {
     @PostMapping("/cancellaUtente/{IdUtente}")
     public String cancellaUtente(@PathVariable("IdUtente")Long idUtente, RedirectAttributes redirectAttributes){
         utenteService.cancellaUtente(idUtente);
-        utenteService.cancellaDipendente(idUtente);
         redirectAttributes.addFlashAttribute("successMessage","Utente eliminato correttamente");
         return "redirect:/utente/nuovoUtente";
     }
