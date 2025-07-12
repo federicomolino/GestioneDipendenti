@@ -23,9 +23,17 @@ public class Dipartimento {
     @NotBlank(message = "Non può essere vuoto")
     private String descrizioneDipartimento;
 
-    @ManyToMany(mappedBy = "dipartimento")
-    @JsonIgnore
-    private List<Dipendente> dipendente;
+    @OneToMany(mappedBy = "dipartimento")
+    @JsonIgnore()
+    private List<Ruolo> ruolo;
+
+    public List<Ruolo> getRuolo() {
+        return ruolo;
+    }
+
+    public void setRuolo(List<Ruolo> ruolo) {
+        this.ruolo = ruolo;
+    }
 
     public Long getIdDipartimento() {
         return idDipartimento;
@@ -49,14 +57,6 @@ public class Dipartimento {
 
     public void setDipendentiPresenti(int dipendentiPresenti) {
         this.dipendentiPresenti = dipendentiPresenti;
-    }
-
-    public List<Dipendente> getDipendente() {
-        return dipendente;
-    }
-
-    public void setDipendente(List<Dipendente> dipendente) {
-        this.dipendente = dipendente;
     }
 
     public String getDescrizioneDipartimento() {

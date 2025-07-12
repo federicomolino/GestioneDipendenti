@@ -13,6 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Map;
+
 @Controller
 @RequestMapping("ruolo")
 public class RuoloController {
@@ -40,8 +42,7 @@ public class RuoloController {
     @PostMapping("nuovo-ruolo")
     public String addNuovoRuolo(@Valid @ModelAttribute("formNewRuolo") Ruolo ruolo,
                                 BindingResult bindingResult,
-                                @RequestParam(value = "IdUtente") Long IdUtente,
-                                @RequestParam(value = "areaFunzionale") Long areaFunzionale,
+                                @RequestParam Map<String, String> associazioniRaw,
                                 RedirectAttributes redirectAttributes,
                                 Model model){
         if (bindingResult.hasErrors()){
@@ -50,8 +51,20 @@ public class RuoloController {
             return "Ruolo/CreaAssegnaRuolo";
         }
 
+        long idUtente = 0;
+        long areaFunzionale = 0;
+        for (Map.Entry<String, String> entry : associazioniRaw.entrySet()){
+            if (entry.getKey().startsWith("associazioni[")){
+                //qualunque carattere che sia tra 0 e 9 passa
+                areaFunzionale = Long.parseLong(entry.getKey().replaceAll("[^0-9]",""));
+                idUtente = Long.parseLong(entry.getValue());
+
+                System.out.println("Dipartimento " + areaFunzionale + " → Utente " + idUtente);
+            }
+        }
+
         try{
-            ruoloService.addRuoloPerDipendente(ruolo, IdUtente, areaFunzionale);
+            ruoloService.addRuoloPerDipendente(ruolo, idUtente, areaFunzionale);
             redirectAttributes.addFlashAttribute("successMessage","Ruolo creato correttamente!");
         }catch (Exception ex){
             redirectAttributes.addFlashAttribute("errorMessage", "Errore generico durante la" +

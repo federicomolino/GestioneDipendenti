@@ -30,6 +30,19 @@ public class Ruolo {
     @JsonBackReference
     private Dipendente dipendente;
 
+    @ManyToOne
+    @JoinColumn(name = "id_dipartimento")
+    @JsonBackReference
+    private Dipartimento dipartimento;
+
+    public Dipartimento getDipartimento() {
+        return dipartimento;
+    }
+
+    public void setDipartimento(Dipartimento dipartimento) {
+        this.dipartimento = dipartimento;
+    }
+
     public Long getIdRuolo() {
         return idRuolo;
     }

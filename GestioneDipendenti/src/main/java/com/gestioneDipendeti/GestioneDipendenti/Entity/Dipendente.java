@@ -39,15 +39,6 @@ public class Dipendente {
     @JsonIgnore
     List<Ruolo> ruolo;
 
-    @ManyToMany
-    @JoinTable(
-            name = "dipendente_dipartimento",
-            joinColumns = @JoinColumn(name = "idDipendente"),
-            inverseJoinColumns = @JoinColumn(name = "idDipartimento")
-    )
-    @JsonIgnore
-    private List<Dipartimento> dipartimento;
-
     @OneToOne
     @JoinColumn(name = "idUtente")
     @JsonManagedReference
@@ -59,14 +50,6 @@ public class Dipendente {
 
     public void setUtente(Utente utente) {
         this.utente = utente;
-    }
-
-    public List<Dipartimento> getDipartimento() {
-        return dipartimento;
-    }
-
-    public void setDipartimento(List<Dipartimento> dipartimento) {
-        this.dipartimento = dipartimento;
     }
 
     public List<Ruolo> getRuolo() {

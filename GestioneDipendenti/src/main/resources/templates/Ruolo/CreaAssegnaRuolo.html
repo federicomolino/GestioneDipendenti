@@ -12,7 +12,7 @@
 <div class="container">
     <div class="row">
         <div class="col-4">
-            <h2>Nuovo Dipartimento</h2>
+            <h2>Assegna Nuovo Ruolo</h2>
         </div>
 
         <hr>
@@ -69,24 +69,24 @@
                         </span>
                     </div>
 
+                    <div>
+                        <i class="ms-3 text-muted">è possibilie inserire un solo utente per volta</i>
+                    </div>
+
                     <div th:unless="${dipartimenti == null or dipartimenti.isEmpty}">
                         <div th:each="dipartimento : ${dipartimenti}">
                             <ul>
                                 <li class="col-3">
                                     <span th:text="${dipartimento.dipartimento}">Produzione Sanità</span>
-                                    <!-- Passa il valore nascosto dell'id dell'area funzionale -->
-                                    <input type="hidden" th:name="areaFunzionale" th:value="${dipartimento.idDipartimento}"/>
 
+                                    <!--Utenti-->
                                     <div th:if="${utenti == null or utenti.isEmpty}">
                                         <span class="text-danger">Nessun Utente nella piattaforma</span>
                                     </div>
 
-
-
-
                                     <div th:unless="${utenti == null or utenti.isEmpty}">
-                                        <select class="form-select form-select-sm col-5" aria-label="Small select example"
-                                                name="IdUtente" required>
+                                        <select class="form-select form-select-sm col-5 dipartimento-select" aria-label="Small select example"
+                                                th:name="${'associazioni[' + dipartimento.idDipartimento + ']'}">
                                             <option selected disabled value="">Scegli Utente da Associare</option>
                                             <option th:each="utente : ${utenti}"
                                                     th:value="${utente.idUtente}"
@@ -110,6 +110,6 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!--Importo script-->
-<script src ="/Contratto.js"></script>
+<script src ="/CreaAssegnaRuolo.js"></script>
 </body>
 </html>

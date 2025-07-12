@@ -29,6 +29,7 @@ public class RuoloService {
         ruoloPerUtente.setAreaFunzionale(dipartimento.getDipartimento());
         //aggiungo 1 nuovo dipendente e salvo il dipartimento
         dipartimento.setDipendentiPresenti(dipartimento.getDipendentiPresenti()+1);
+        ruoloPerUtente.setDipartimento(dipartimento);
         dipartimentoRepository.save(dipartimento);
         return ruoloRepository.save(ruoloPerUtente);
     }
