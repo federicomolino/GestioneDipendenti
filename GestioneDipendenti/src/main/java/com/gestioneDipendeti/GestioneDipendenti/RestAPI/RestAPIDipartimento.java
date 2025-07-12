@@ -2,6 +2,7 @@ package com.gestioneDipendeti.GestioneDipendenti.RestAPI;
 
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipartimento;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.DipartimentoRepository;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.RuoloRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.DipartimentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,9 @@ public class RestAPIDipartimento {
 
     @Autowired
     private DipartimentoService dipartimentoService;
+
+    @Autowired
+    private RuoloRepository ruoloRepository;
 
     private static final Logger logApiDipartimento = Logger.getLogger(RestAPIDipartimento.class.getName());
 

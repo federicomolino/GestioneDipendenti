@@ -35,8 +35,8 @@ public class ContrattoController {
 
     @GetMapping("/contratto/{idUtente}")
     public String showContratto(@PathVariable("idUtente") Long idUtente, Model model){
-        Dipendente dipendente = dipendenteRepository.findById(idUtente).get();
-        Utente utente = utenteRepository.findById(dipendente.getIdDipendente()).get();
+        Dipendente dipendente = dipendenteRepository.findByUtenteId(idUtente);
+        Utente utente = utenteRepository.findById(dipendente.getUtente().getIdUtente()).get();
         model.addAttribute("utente",utente);
         model.addAttribute("formNewContratto", new Contratto());
         return "Contratto/Contratto";
@@ -75,8 +75,8 @@ public class ContrattoController {
 
     @GetMapping("/contratto/edit/{IdUtente}")
     public String showContrattoUtente(@PathVariable("IdUtente") Long idUtente, Model model, RedirectAttributes redirectAttributes){
-        Dipendente dipendente = dipendenteRepository.findById(idUtente).get();
-        Utente utente = utenteRepository.findById(dipendente.getIdDipendente()).get();
+        Dipendente dipendente = dipendenteRepository.findByUtenteId(idUtente);
+        Utente utente = utenteRepository.findById(dipendente.getUtente().getIdUtente()).get();
         Optional<Contratto> contratto = contrattoRepository.findBydipendente(dipendente);
         if (!contratto.isPresent()){
             redirectAttributes.addFlashAttribute("errorMessage","Nessun contratto per il dipendente" +

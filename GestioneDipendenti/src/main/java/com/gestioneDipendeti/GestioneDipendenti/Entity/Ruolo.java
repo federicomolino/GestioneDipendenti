@@ -32,7 +32,6 @@ public class Ruolo {
 
     @ManyToOne
     @JoinColumn(name = "id_dipartimento")
-    @JsonBackReference
     private Dipartimento dipartimento;
 
     public Dipartimento getDipartimento() {
