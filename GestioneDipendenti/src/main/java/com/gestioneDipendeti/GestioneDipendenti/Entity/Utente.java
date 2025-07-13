@@ -1,6 +1,7 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -32,6 +33,18 @@ public class Utente {
     @OneToOne(mappedBy = "utente")
     @JsonBackReference
     private Dipendente dipendente;
+
+    @OneToMany(mappedBy = "utente")
+    @JsonIgnore
+    private List<Assistenza> assistenza;
+
+    public List<Assistenza> getAssistenza() {
+        return assistenza;
+    }
+
+    public void setAssistenza(List<Assistenza> assistenza) {
+        this.assistenza = assistenza;
+    }
 
     public Dipendente getDipendente() {
         return dipendente;

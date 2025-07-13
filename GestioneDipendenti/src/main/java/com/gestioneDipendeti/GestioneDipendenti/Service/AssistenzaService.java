@@ -11,6 +11,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
@@ -28,11 +29,19 @@ public class AssistenzaService {
     private static final Logger logAssistenza= Logger.getLogger(AssistenzaService.class.getName());
 
     public Assistenza addAsstenza(String richiesta,
-                                  TipologiaRichiestaAssistenza tipologiaRichiestaAssistenza){
+                                  TipologiaRichiestaAssistenza tipologiaRichiestaAssistenza, long idUdente){
+        Utente utenteAdmin = utenteRepository.findById(idUdente).get();
+        //Verifico se l'id passato ha i permessi di Admin
+        Optional<Utente> utente = utenteRepository.findByIdAndRoleId(utenteAdmin.getIdUtente(), 1L);
+        if (!utente.isPresent()){
+            logAssistenza.info("l'utente con id:" + idUdente + " non è Admin");
+            throw new IllegalArgumentException("l'utente con id:" + idUdente + " non è Admin");
+        }
         Assistenza assistenzaAperta = new Assistenza();
         assistenzaAperta.setRichiesta(richiesta);
         assistenzaAperta.setTipologiaRichiestaAssistenza(tipologiaRichiestaAssistenza);
         assistenzaAperta.setRichiestaChiusa(false);
+        assistenzaAperta.setUtente(utenteAdmin);
         logAssistenza.info("Richiesta Creata");
         return assistenzaRepository.save(assistenzaAperta);
     }

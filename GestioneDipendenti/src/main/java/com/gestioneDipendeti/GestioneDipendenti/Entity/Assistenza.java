@@ -1,5 +1,6 @@
 package com.gestioneDipendeti.GestioneDipendenti.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +17,19 @@ public class Assistenza {
 
     @Column(name = "isChiusa")
     private boolean richiestaChiusa;
+
+    @ManyToOne
+    @JoinColumn(name = "id_utente")
+    @JsonIgnore
+    private Utente utente;
+
+    public Utente getUtente() {
+        return utente;
+    }
+
+    public void setUtente(Utente utente) {
+        this.utente = utente;
+    }
 
     public boolean isRichiestaChiusa() {
         return richiestaChiusa;

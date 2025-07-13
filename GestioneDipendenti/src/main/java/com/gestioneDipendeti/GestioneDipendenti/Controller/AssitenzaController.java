@@ -39,9 +39,22 @@ public class AssitenzaController {
     public String addRichiestaAssistenza(@RequestParam("responsabile") long idUtente,
                                          @RequestParam("tipologiaRichiestaAssistenza") TipologiaRichiestaAssistenza tipologiaRichiestaAssistenza,
                                          @RequestParam("richiesta") String richiesta, RedirectAttributes redirectAttributes){
+        if (!tipologiaRichiestaAssistenza.equals(TipologiaRichiestaAssistenza.RICHIESTA_GENERICA) &&
+                !tipologiaRichiestaAssistenza.equals(TipologiaRichiestaAssistenza.FERIE) &&
+                tipologiaRichiestaAssistenza.equals(TipologiaRichiestaAssistenza.MANCATA_TIMBRATURA)){
+            redirectAttributes.addFlashAttribute("errorMessage","Errore nella compilazione dei dati" +
+                    " 'Motiviazine Richiesta'");
+            return "redirect:/assistenza";
+        }
+
+        if (richiesta.isEmpty()){
+            redirectAttributes.addFlashAttribute("errorMessage","Errore nella compilazione dei dati" +
+                    " 'Inserisci richiesta'");
+            return "redirect:/assistenza";
+        }
 
         try {
-            assistenzaService.addAsstenza(richiesta,tipologiaRichiestaAssistenza);
+            assistenzaService.addAsstenza(richiesta,tipologiaRichiestaAssistenza,idUtente);
             assistenzaService.invioEmailAssistenzaAperta(idUtente,richiesta);
             redirectAttributes.addFlashAttribute("successMessage","Richiesta inoltrata correttamente");
             return "redirect:/assistenza";
