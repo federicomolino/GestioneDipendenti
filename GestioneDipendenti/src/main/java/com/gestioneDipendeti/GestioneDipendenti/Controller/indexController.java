@@ -4,10 +4,7 @@ import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Presenza;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Utente;
-import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
-import com.gestioneDipendeti.GestioneDipendenti.Repository.DipendenteRepository;
-import com.gestioneDipendeti.GestioneDipendenti.Repository.PresenzaRepository;
-import com.gestioneDipendeti.GestioneDipendenti.Repository.UtenteRepository;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.*;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,6 +34,9 @@ public class indexController {
 
     @Autowired
     private ContrattoRepository contrattoRepository;
+
+    @Autowired
+    private AssistenzaRepository assistenzaRepository;
 
     @GetMapping()
     public String showUtente(Model model, Principal principal){
