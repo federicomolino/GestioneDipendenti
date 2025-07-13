@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Leggi Richiesta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/Navbar.css">
+</head>
+<body>
+<!--importo navbar-->
+<div th:replace="~{Navbar/navbar :: navbar}"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h5 th:text="${assistenza.tipologiaRichiestaAssistenza}">RICHIESTA_GENERICA</h5>
+        </div>
+    </div>
+
+     <div class="col-5 mt-3">
+        <div class="border rounded p-2">
+            <span class="ms-3" th:text="${assistenza.richiesta}">Ciao la mia richiesta fa riferimento...</span>
+        </div>
+
+         <div th:if="${assistenza.richiestaChiusa == false}" class="mt-3 d-flex justify-content-end">
+             <form method="post" th:action="@{/posta/richiesta/{idAssistenza}(idAssistenza=${assistenza.idAssistenza})}">
+                 <button type="submit" class="btn btn-sm btn-success">Chiudi Richiesta</button>
+             </form>
+         </div>
+         <div th:unless="${assistenza.richiestaChiusa == false}" class="mt-3">
+             <span>La richiesta è chiusa</span>
+         </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

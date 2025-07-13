@@ -15,25 +15,55 @@
             <h5>Casella di Posta</h5>
         </div>
     </div>
-    <!--Messaggi successo ed errore
+
+    <div th:if="${listPosta.isEmpty}">
+        <div class="row p-3 mb-2 bg-body-secondary">
+            <div class="d-flex justify-content-center">
+                <span class="text-muted">Nessun richiesta presente</span>
+            </div>
+        </div>
+    </div>
+
+    <!--Messaggi success ed error-->
     <div th:if="${successMessage}" class="alert alert-success d-flex justify-content-between mt-2 col-4 mx-auto">
-        <span th:text="${successMessage}">Richiesta inviata correttamente!</span>
+        <span th:text="${successMessage}">Segnate in chiuso</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
     <div th:if="${errorMessage}" class="alert alert-danger d-flex justify-content-between mt-2 col-4 mx-auto">
-        <span th:text="${errorMessage}">Errore durante l'invio della richiesta</span>
+        <span th:text="${errorMessage}">Qualcosa è andato storto</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <div th:if="${infoMessage}" class="alert alert-warning d-flex justify-content-between mt-2 col-4 mx-auto">
-        <span th:text="${infoMessage}">Richiesta inviata, mail non andata a buon fine</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>-->
+    <form method="post" th:action="@{/posta}">
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-secondary"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+                Chiudi Richieste
+            </button>
+        </div>
+        <hr>
 
-    <div>
-        ciao
-    </div>
+        <div th:unless="${listPosta.isEmpty}">
+            <div th:each="assistenza : ${listPosta}">
+                <!--Posta Letta-->
+                <a th:href="@{/posta/richiesta/{idAssistenza}(idAssistenza=${assistenza.idAssistenza})}"
+                   class="link-underline link-underline-opacity-0 text-black">
+
+                    <div th:class="${assistenza.richiestaChiusa} ? 'bg-light mt-1 p-1 rounded' : 'bs-secondary-color-rgb mt-1 p-1 rounded'">
+                        <div class="d-flex">
+                            <div>
+                                <input type="checkbox" th:value="${assistenza.idAssistenza}" name="selezionati">
+                            </div>
+                            <div class="ms-2 mb-1">
+                                <span th:text="${assistenza.tipologiaRichiestaAssistenza}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </form>
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
