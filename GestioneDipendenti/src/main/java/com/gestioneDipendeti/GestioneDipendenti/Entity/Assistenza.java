@@ -3,6 +3,8 @@ package com.gestioneDipendeti.GestioneDipendenti.Entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 public class Assistenza {
 
@@ -22,6 +24,28 @@ public class Assistenza {
     @JoinColumn(name = "id_utente")
     @JsonIgnore
     private Utente utente;
+
+    @Column(name = "id_utente_apertura")
+    private long idUteneApertura;
+
+    @Column(name = "ora_apertura")
+    private LocalDate orarioApertura;
+
+    public long getIdUteneApertura() {
+        return idUteneApertura;
+    }
+
+    public void setIdUteneApertura(long idUteneApertura) {
+        this.idUteneApertura = idUteneApertura;
+    }
+
+    public LocalDate getOrarioApertura() {
+        return orarioApertura;
+    }
+
+    public void setOrarioApertura(LocalDate orarioApertura) {
+        this.orarioApertura = orarioApertura;
+    }
 
     public Utente getUtente() {
         return utente;

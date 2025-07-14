@@ -12,7 +12,8 @@
 <div class="container">
     <div class="row">
         <div class="col-6">
-            <h5 th:text="${assistenza.tipologiaRichiestaAssistenza}">RICHIESTA_GENERICA</h5>
+            <h5 th:text="${assistenza.tipologiaRichiestaAssistenza} + ' di ' + ${usernameUtenteAperturaRichiesta}">
+                RICHIESTA_GENERICA di federico.molino</h5>
         </div>
     </div>
 

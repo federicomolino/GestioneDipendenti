@@ -11,6 +11,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -29,7 +30,8 @@ public class AssistenzaService {
     private static final Logger logAssistenza= Logger.getLogger(AssistenzaService.class.getName());
 
     public Assistenza addAsstenza(String richiesta,
-                                  TipologiaRichiestaAssistenza tipologiaRichiestaAssistenza, long idUdente){
+                                  TipologiaRichiestaAssistenza tipologiaRichiestaAssistenza, long idUdente,
+                                  long idUtenteApertoRichiesto, LocalDate dataAperturaRichiesta){
         Utente utenteAdmin = utenteRepository.findById(idUdente).get();
         //Verifico se l'id passato ha i permessi di Admin
         Optional<Utente> utente = utenteRepository.findByIdAndRoleId(utenteAdmin.getIdUtente(), 1L);
@@ -42,18 +44,22 @@ public class AssistenzaService {
         assistenzaAperta.setTipologiaRichiestaAssistenza(tipologiaRichiestaAssistenza);
         assistenzaAperta.setRichiestaChiusa(false);
         assistenzaAperta.setUtente(utenteAdmin);
+        assistenzaAperta.setIdUteneApertura(idUtenteApertoRichiesto);
+        assistenzaAperta.setOrarioApertura(dataAperturaRichiesta);
         logAssistenza.info("Richiesta Creata");
         return assistenzaRepository.save(assistenzaAperta);
     }
 
-    public void invioEmailAssistenzaAperta(long idUtente,String richiesta)throws AuthenticationException{
+    public void invioEmailAssistenzaAperta(long idUtente,String richiesta, long idUtenteApertoRichiesto )throws AuthenticationException{
         try{
+            //Recupero Utente che ha aperto la richiesta
+            Utente utenteApertoRichiesta = utenteRepository.findById(idUtenteApertoRichiesto).get();
             Utente utenteAdmin = utenteRepository.findById(idUtente).get();
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(utenteAdmin.getEmail());
             message.setSubject("Richiesta Assistenza");
             message.setText("Ciao, " + utenteAdmin.getUsername() +" la richiesta è la seguente:\n" +
-                    richiesta);
+                    richiesta + "\n" + "inoltrata da "+ utenteApertoRichiesta.getUsername());
             javaMailSender.send(message);
             logAssistenza.info("Mail inviata correttamente a " + utenteAdmin.getEmail());
         }catch (Exception e){

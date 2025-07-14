@@ -48,10 +48,11 @@ public class indexController {
         model.addAttribute("formAddPresenza", new Presenza());
         model.addAttribute("Dipendete", dipendente);
         Presenza p = presenzaRepository.findTopByDipendenteOrderByIdPresenzaDesc(dipendente);
-        if (p.getData().isEqual(LocalDate.now())){
-            model.addAttribute("presenzaGiornaliera", p);
-        }else {
+
+        if (p == null){
             model.addAttribute("presenzaGiornaliera", null);
+        }else if (p.getData().isEqual(LocalDate.now())){
+            model.addAttribute("presenzaGiornaliera", p);
         }
 
         Optional<Contratto> contrattoDipendente = contrattoRepository.findBydipendente(dipendente);

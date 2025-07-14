@@ -3,6 +3,7 @@ package com.gestioneDipendeti.GestioneDipendenti.Controller;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Assistenza;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Utente;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.AssistenzaRepository;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.UtenteRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
 import com.gestioneDipendeti.GestioneDipendenti.Service.PostaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class PostaController {
     @Autowired
     private PostaService postaService;
 
+    @Autowired
+    private UtenteRepository utenteRepository;
+
     @GetMapping()
     public String showPostaPage(Model model, Principal principal){
         Utente utente = loginService.recuperoUtente(principal);
@@ -38,7 +42,11 @@ public class PostaController {
     @GetMapping("/richiesta/{idRichiesta}")
     public String showSingleRichiesta(@PathVariable("idRichiesta") long idRichiesta, Model model){
         Assistenza assistenza = assistenzaRepository.findById(idRichiesta).get();
+        //recupero l'utente che ha aperto la richiesta
+        long idUtenteAperturaRichiesta = assistenza.getIdUteneApertura();
+        Utente usernameUtenteAperturaRichiesta = utenteRepository.findById(idUtenteAperturaRichiesta).get();
         model.addAttribute("assistenza",assistenza);
+        model.addAttribute("usernameUtenteAperturaRichiesta", usernameUtenteAperturaRichiesta.getUsername());
         return "Assistenza/leggiRichiesta";
     }
 

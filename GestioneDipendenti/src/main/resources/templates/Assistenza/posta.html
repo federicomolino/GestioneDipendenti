@@ -55,8 +55,15 @@
                             <div>
                                 <input type="checkbox" th:value="${assistenza.idAssistenza}" name="selezionati">
                             </div>
-                            <div class="ms-2 mb-1">
-                                <span th:text="${assistenza.tipologiaRichiestaAssistenza}"></span>
+                            <div class="col-11 d-flex justify-content-between">
+                                <div class="ms-2">
+                                    <span th:text="${assistenza.tipologiaRichiestaAssistenza}">TEST</span>
+                                </div>
+                                <div th:if="${assistenza.orarioApertura != null}">
+                                    <span th:text="'ora Apertura Richiesta: ' + ${assistenza.orarioApertura}" class="text-muted">
+                                        2025-05-11
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
