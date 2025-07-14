@@ -35,7 +35,7 @@ public class PostaController {
     @GetMapping()
     public String showPostaPage(Model model, Principal principal){
         Utente utente = loginService.recuperoUtente(principal);
-        model.addAttribute("listPosta",assistenzaRepository.findByUtente_IdUtente(utente.getIdUtente()));
+        model.addAttribute("listPosta",assistenzaRepository.findByUtente_IdUtenteOrderByIdAssistenzaDesc(utente.getIdUtente()));
         return "Assistenza/posta";
     }
 

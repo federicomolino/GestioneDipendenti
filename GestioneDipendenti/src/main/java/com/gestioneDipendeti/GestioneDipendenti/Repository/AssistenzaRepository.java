@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface AssistenzaRepository extends JpaRepository<Assistenza,Long> {
-    List<Assistenza> findByUtente_IdUtente(@Param("idUtente") long idUtente);
+    List<Assistenza> findByUtente_IdUtenteOrderByIdAssistenzaDesc(@Param("idUtente") long idUtente);
 
     @Query("select count(a) from Assistenza a where a.utente.idUtente = :idUtente AND a.richiestaChiusa = false")
     Long countRichiesteApertePerUtente(@Param("idUtente") Long idUtente);
