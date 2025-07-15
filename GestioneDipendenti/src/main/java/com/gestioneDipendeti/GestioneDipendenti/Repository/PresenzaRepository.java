@@ -36,5 +36,5 @@ public interface PresenzaRepository extends JpaRepository<Presenza, Long> {
     SELECT p.* FROM db_gestionedipendenti.presenza p
     WHERE p.id_dipendente = 1
     order by p.id_presenza desc;*/
-    Presenza findTopByDipendenteOrderByIdPresenzaDesc(Dipendente dipendente);
+    Presenza findTopByDipendenteOrderByDataDesc(Dipendente dipendente);
 }

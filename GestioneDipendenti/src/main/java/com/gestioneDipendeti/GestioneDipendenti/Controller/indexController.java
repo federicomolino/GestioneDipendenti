@@ -47,7 +47,7 @@ public class indexController {
 
         model.addAttribute("formAddPresenza", new Presenza());
         model.addAttribute("Dipendete", dipendente);
-        Presenza p = presenzaRepository.findTopByDipendenteOrderByIdPresenzaDesc(dipendente);
+        Presenza p = presenzaRepository.findTopByDipendenteOrderByDataDesc(dipendente);
 
         if (p == null){
             model.addAttribute("presenzaGiornaliera", null);
