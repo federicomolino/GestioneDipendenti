@@ -286,8 +286,10 @@ public class PresenzaService {
                 String chiudiGiornata = parts[7];
                 if (chiudiGiornata.isEmpty()){
                     presenza.setChiudiGiornata(Boolean.FALSE);
+                }else if (chiudiGiornata.equals("1")){
+                    presenza.setChiudiGiornata(Boolean.TRUE);
                 }else {
-                    presenza.setChiudiGiornata(Boolean.parseBoolean(chiudiGiornata));
+                    presenza.setChiudiGiornata(Boolean.FALSE);
                 }
 
                 presenzaRepository.save(presenza);
