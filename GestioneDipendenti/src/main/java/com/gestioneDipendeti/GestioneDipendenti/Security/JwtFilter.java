@@ -1,5 +1,6 @@
 package com.gestioneDipendeti.GestioneDipendenti.Security;
 
+import com.gestioneDipendeti.GestioneDipendenti.Repository.UtenteRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,8 +19,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
 
-    public JwtFilter(TokenService tokenService){
+    private UtenteRepository utenteRepository;
+
+    public JwtFilter(TokenService tokenService, UtenteRepository utenteRepository){
         this.tokenService = tokenService;
+        this.utenteRepository = utenteRepository;
     }
 
     //Escludiamo tutte le richieste che iniziano per /api/v1
@@ -43,6 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
 
         //Se l'header Authorization manca o non inizia con la stringa "Bearer ",
         // la risposta è 401 Unauthorized con messaggio "Token mancante o non valido".

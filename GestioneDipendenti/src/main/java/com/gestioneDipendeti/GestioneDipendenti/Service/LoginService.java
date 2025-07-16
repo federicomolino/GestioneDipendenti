@@ -27,7 +27,7 @@ public class LoginService {
     public Dipendente recuperoDipendente(Principal principal){
         Utente user = recuperoUtente(principal);
         Long idUtente = user.getIdUtente();
-        Dipendente dipendente = dipendenteRepository.findById(idUtente).get();
+        Dipendente dipendente = dipendenteRepository.findByUtenteId(idUtente);
         return dipendente;
     }
 }

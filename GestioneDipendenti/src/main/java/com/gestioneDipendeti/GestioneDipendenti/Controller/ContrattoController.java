@@ -54,7 +54,7 @@ public class ContrattoController {
         }
 
         //Verifico se per qull'utente esiste già un contratto
-        Dipendente dipendente = dipendenteRepository.findById(utente.getIdUtente()).get();
+        Dipendente dipendente = dipendenteRepository.findByUtenteId(utente.getIdUtente());
         Optional<Contratto> contrattoPerUtente = contrattoRepository.findBydipendente(dipendente);
         if (contrattoPerUtente.isPresent()){
             redirectAttributes.addFlashAttribute("errorMessage", "Esiste già un contratto" +
@@ -94,7 +94,7 @@ public class ContrattoController {
                                 @PathVariable("IdUtente") Long idUtente, RedirectAttributes redirectAttributes,
                                 Model model, BindingResult bindingResult){
         Utente utente = utenteRepository.findById(idUtente).get();
-        Dipendente dipendente = dipendenteRepository.findById(idUtente).get();
+        Dipendente dipendente = dipendenteRepository.findByUtenteId(idUtente);
         if (bindingResult.hasErrors()){
             model.addAttribute("contrattoDi",dipendente.getNome() + " " + dipendente.getCognome());
             model.addAttribute("utente", utente);

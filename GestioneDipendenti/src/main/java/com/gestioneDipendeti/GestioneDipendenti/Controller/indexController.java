@@ -43,7 +43,7 @@ public class indexController {
         //Recupero dipendente
         Utente user = loginService.recuperoUtente(principal);
         Long idUtente = user.getIdUtente();
-        Dipendente dipendente = dipendenteRepository.findById(idUtente).get();
+        Dipendente dipendente = dipendenteRepository.findByUtenteId(idUtente);
 
         model.addAttribute("formAddPresenza", new Presenza());
         model.addAttribute("Dipendete", dipendente);
