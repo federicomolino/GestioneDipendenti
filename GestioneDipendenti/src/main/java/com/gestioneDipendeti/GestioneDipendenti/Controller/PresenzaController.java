@@ -58,6 +58,7 @@ public class PresenzaController {
         if (presenza.getDataInizioFerie() != null && presenza.getDataFineFerie() != null){
             try{
                 presenzaService.addPresenzaConFerie(presenza,principal);
+                redirectAttributes.addFlashAttribute("presenzaSuccess","Ferie Aggiunte con Successo");
                 return "redirect:/";
             }catch (ArithmeticException ex){
                 redirectAttributes.addFlashAttribute("presenzaError", "Limite ferire superato!!");

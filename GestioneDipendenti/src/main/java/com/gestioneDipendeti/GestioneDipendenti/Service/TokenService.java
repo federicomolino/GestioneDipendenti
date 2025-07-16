@@ -38,6 +38,7 @@ public class TokenService {
             logTokenService.warning("Regole utente non valide");
             throw new IllegalAccessError("Regole utente non valide");
         }
+        //Token generato è composto da base64()
         String token = Jwts.builder()
                 .setSubject(username) //L'utente che viene codificato nel token
                 .setIssuedAt(new Date()) //Data di emissione token

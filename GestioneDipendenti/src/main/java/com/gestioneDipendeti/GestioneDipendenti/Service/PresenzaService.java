@@ -35,10 +35,19 @@ public class PresenzaService {
     private static final Logger log = Logger.getLogger(PresenzaService.class.getName());
 
 
-    public Presenza addPreseza (Presenza presenza, Principal principal) throws DataFormatException{
+    public Presenza addPreseza (Presenza presenza, Principal principal) throws IllegalArgumentException, DataFormatException{
         //Setto id Utente
         Utente utente = loginService.recuperoUtente(principal);
         Dipendente dipendente = utente.getDipendente();
+        LocalTime oraEntrata = presenza.getOraEntrata();
+        LocalTime oraUscita = presenza.getOraUscita();
+
+        //Presenza già presente a DB
+        boolean presenzaData = presenzaRepository.existsByDataAndDipendente(LocalDate.now(), dipendente);
+        if (presenzaData){
+            log.warning("Riga già presente nel db");
+            throw new IllegalArgumentException("Riga già presente nel db");
+        }
 
         if (presenza.getStato().equals(StatoPresenza.PERMESSO)){
             try {
@@ -46,6 +55,11 @@ public class PresenzaService {
             }catch (DataFormatException ex){
                 throw ex;
             }
+        }
+        //verifo l'orario nel caso in cui si tratti dello stato "PRESENTE"
+        if (oraEntrata.isAfter(oraUscita)){
+            log.warning("Ora uscita più grande dell'oraEntrata");
+            throw new DataFormatException("Ora uscita più grande dell'oraEntrata");
         }
         presenza.setDipendente(dipendente);
         return presenzaRepository.save(presenza);
@@ -117,6 +131,9 @@ public class PresenzaService {
             contrattoDipendente.get().setOreFerieUtilizzate(contrattoDipendente.get().getOreFerieUtilizzate() + oreTotaliPermessoConvertitoInFloat);
             Contratto contrattoDipendenteEsistente = contrattoDipendente.get();
             contrattoRepository.save(contrattoDipendenteEsistente);
+        }else {
+            log.warning("Contratto non presente per il dipendente");
+            throw new IllegalArgumentException("Contratto non presente per il dipendente");
         }
     }
 

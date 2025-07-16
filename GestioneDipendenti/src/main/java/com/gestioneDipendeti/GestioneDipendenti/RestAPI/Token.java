@@ -28,9 +28,9 @@ public class Token {
             String token = tokenService.generaToken(username);
             return ResponseEntity.ok(Map.of("token",token));
         }catch (UsernameNotFoundException e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("username:","username non valido"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("username:","Username non valido"));
         }catch (IllegalAccessError ex){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("username:", "utente non abilitato"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("username:", "Utente non abilitato"));
         }
     }
 }
