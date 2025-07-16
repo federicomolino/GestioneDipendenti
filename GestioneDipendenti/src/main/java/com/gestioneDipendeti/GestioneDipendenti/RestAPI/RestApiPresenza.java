@@ -12,8 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 
 @RestController
@@ -28,6 +29,8 @@ public class RestApiPresenza {
 
     private UtenteRepository utenteRepository;
 
+    private final Logger logRestApiPresenza = Logger.getLogger(RestApiPresenza.class.getName());
+
     public RestApiPresenza(PresenzaRepository presenzaRepository, PresenzaService presenzaService, DipendenteRepository
                            dipendenteRepository, UtenteRepository utenteRepository){
         this.presenzaRepository = presenzaRepository;
@@ -36,18 +39,19 @@ public class RestApiPresenza {
         this.utenteRepository = utenteRepository;
     }
 
-    @GetMapping()
-    public ResponseEntity<?> addPresenza(){
-        List<Presenza> p = presenzaRepository.findAll();
-        return ResponseEntity.ok(p);
-    }
 
     @PostMapping("/{id}")
-    public ResponseEntity<String> addPresenzaApi(@PathVariable("id")Long id, @RequestBody Presenza presenza){
-        Dipendente dipendente = dipendenteRepository.findById(id).get();
-        Optional<Utente> utente = utenteRepository.findById(dipendente.getUtente().getIdUtente());
+    public ResponseEntity<Map<String, Object>> addPresenzaApi(@PathVariable("id")Long id, @RequestBody Presenza presenza){
+        Optional<Dipendente> dipendente = dipendenteRepository.findById(id);
+        if (dipendente.isEmpty()){
+            logRestApiPresenza.warning("Nessun dipendente trovato");
+            return ResponseEntity.internalServerError().body(Map.of("Nessun dipendente trovato", presenza));
+        }
+
+        Optional<Utente> utente = utenteRepository.findById(dipendente.get().getUtente().getIdUtente());
         if (utente.isEmpty()){
-            ResponseEntity.internalServerError();
+            logRestApiPresenza.warning("Nessun utente trovato");
+            return ResponseEntity.internalServerError().body(Map.of("Utente non trovata", presenza));
         }
 
         //Usiamo lamba(classe anonima) evitiamo di crearci una classe apposta per trasformare stringa --> principal
@@ -56,19 +60,29 @@ public class RestApiPresenza {
             try {
                 presenzaService.addPreseza(presenza,principal);
             }catch (DataFormatException exdata){
-                return ResponseEntity.badRequest().body("Date inserite non valide");
+                logRestApiPresenza.warning("Date inserite non valide");
+//                return ResponseEntity.badRequest().body("Date inserite non valide");
+                return ResponseEntity.badRequest().body(Map.of("Date inserite non valide", presenza));
             }catch (IllegalArgumentException ex){
-                return ResponseEntity.badRequest().body("Data già presente a sistema");
+                logRestApiPresenza.warning("Data già presente a sistema");
+//                return ResponseEntity.badRequest().body("Data già presente a sistema");
+                return ResponseEntity.badRequest().body(Map.of("Data già presente a sistema", presenza));
             }
         } else if (presenza.getStato().equals(StatoPresenza.FERIE)) {
             try {
                 presenzaService.addPresenzaConFerie(presenza,principal);
             }catch (IllegalArgumentException ex){
-                return ResponseEntity.badRequest().body("Data già presente a sistema");
+                logRestApiPresenza.warning("Data già presente a sistema");
+//                return ResponseEntity.badRequest().body("Data già presente a sistema");
+                return ResponseEntity.badRequest().body(Map.of("Data già presente a sistema", presenza));
             }catch (ArithmeticException ex){
-                return ResponseEntity.badRequest().body("Limite massimo di ore ferie superato");
+                logRestApiPresenza.warning("Limite massimo di ore ferie superato");
+//                return ResponseEntity.badRequest().body("Limite massimo di ore ferie superato");
+                return ResponseEntity.badRequest().body(Map.of("Limite massimo di ore ferie superato", presenza));
             }
         }
-        return ResponseEntity.ok().body(presenza + " Presenza segnata");
+        logRestApiPresenza.info("Presenza segnata");
+//        return ResponseEntity.ok().body("presenza segnata");
+        return ResponseEntity.ok().body(Map.of("messaggio: ", presenza));
     }
 }
