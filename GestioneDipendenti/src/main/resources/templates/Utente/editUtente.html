@@ -86,9 +86,14 @@
                   <label class="form-check-label" for="checkDefault">ADMIN</label>
                 </div>
                 <div class="form-check small">
-                  <input class="form-check-input" type="checkbox" value="USER" id="checkChecked" checked
+                  <input class="form-check-input" type="checkbox" value="USER" id="checkChecked"
                          name="ruoli" th:checked="${formEditUtente.ruoli.contains('USER')}">
                   <label class="form-check-label" for="checkChecked">USER</label>
+                </div>
+                <div class="form-check small">
+                  <input class="form-check-input" type="checkbox" value="SERVICE" id="checkCheckedService"
+                         name="ruoli" th:checked="${formEditUtente.ruoli.contains('SERVICE')}">
+                  <label class="form-check-label" for="checkChecked">SERVICE</label>
                 </div>
               </div>
             </div>

@@ -109,7 +109,7 @@ UtenteController {
     public String showEditUtente(Model model, Principal principal){
         String username = principal.getName();
         Utente utente = utenteRepository.findByUsername(username).get();
-        Dipendente dipendente = dipendenteRepository.findById(utente.getIdUtente()).get();
+        Dipendente dipendente = dipendenteRepository.findByUtenteId(utente.getIdUtente());
         NuovoUtenteDTO nuovoUtenteDTO = new NuovoUtenteDTO();
         nuovoUtenteDTO.setNome(dipendente.getNome());
         nuovoUtenteDTO.setCognome(dipendente.getCognome());

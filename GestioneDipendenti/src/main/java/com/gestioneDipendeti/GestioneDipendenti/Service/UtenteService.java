@@ -49,7 +49,7 @@ public class UtenteService {
 
     public Dipendente editDipendente (NuovoUtenteDTO nuovoUtenteDTO, Principal principal){
         Utente utente = loginService.recuperoUtente(principal);
-        Dipendente dipendente = dipendenteRepository.findById(utente.getIdUtente()).get();
+        Dipendente dipendente = dipendenteRepository.findByUtenteId(utente.getIdUtente());
         dipendente.setCognome(nuovoUtenteDTO.getCognome());
         dipendente.setDataDiNascita(nuovoUtenteDTO.getDataDiNascita());
         dipendente.setLuogoDiNascita(nuovoUtenteDTO.getLuogoDiNascita());
