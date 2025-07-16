@@ -61,11 +61,9 @@ public class RestApiPresenza {
                 presenzaService.addPreseza(presenza,principal);
             }catch (DataFormatException exdata){
                 logRestApiPresenza.warning("Date inserite non valide");
-//                return ResponseEntity.badRequest().body("Date inserite non valide");
                 return ResponseEntity.badRequest().body(Map.of("Date inserite non valide", presenza));
             }catch (IllegalArgumentException ex){
                 logRestApiPresenza.warning("Data già presente a sistema");
-//                return ResponseEntity.badRequest().body("Data già presente a sistema");
                 return ResponseEntity.badRequest().body(Map.of("Data già presente a sistema", presenza));
             }
         } else if (presenza.getStato().equals(StatoPresenza.FERIE)) {
@@ -73,16 +71,13 @@ public class RestApiPresenza {
                 presenzaService.addPresenzaConFerie(presenza,principal);
             }catch (IllegalArgumentException ex){
                 logRestApiPresenza.warning("Data già presente a sistema");
-//                return ResponseEntity.badRequest().body("Data già presente a sistema");
                 return ResponseEntity.badRequest().body(Map.of("Data già presente a sistema", presenza));
             }catch (ArithmeticException ex){
                 logRestApiPresenza.warning("Limite massimo di ore ferie superato");
-//                return ResponseEntity.badRequest().body("Limite massimo di ore ferie superato");
                 return ResponseEntity.badRequest().body(Map.of("Limite massimo di ore ferie superato", presenza));
             }
         }
         logRestApiPresenza.info("Presenza segnata");
-//        return ResponseEntity.ok().body("presenza segnata");
         return ResponseEntity.ok().body(Map.of("messaggio: ", presenza));
     }
 }
