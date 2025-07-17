@@ -31,65 +31,80 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <div class="row col-10">
-        <form method="post" th:action="@{/assistenza}">
-            <!--Responsabile a cui inviare richiesta-->
+    <div class="container col-9">
+        <div class="rounded-3 border border-success p-2 d-flex justify-content-center">
             <div class="row col-10">
+                <form method="post" th:action="@{/assistenza}">
+                    <!--Responsabile a cui inviare richiesta-->
+                    <div class="row col-10">
 
-                <div class="d-flex justify-content-between">
-                    <div class="col-5">
-                        <label>Inserisci il Responsabile a cui mandare la richiesta</label>
-                    </div>
-                    <div class="col-5">
-                        <label>Inserisci Motivazione Richiesta</label>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-between">
-                    <div class="col-5">
-                        <select class="form-select form-select-sm" aria-label="Small select example" name="responsabile">
-                            <option disabled selected>Seleziona Responsabile</option>
-                            <div th:each="utente : ${listUtentiAdmin}">
-                                <option  th:value="${utente.idUtente}"
-                                         th:text="${utente.username}">federico.molino</option>
+                        <div class="d-flex justify-content-between">
+                            <div class="col-5">
+                                <label>Inserisci il Responsabile a cui mandare la richiesta</label>
                             </div>
-                        </select>
-                    </div>
+                            <div class="col-5">
+                                <label>Inserisci Motivazione Richiesta</label>
+                            </div>
+                        </div>
 
-                    <div class="col-5">
-                        <select class="form-select form-select-sm" aria-label="Small select example"
-                                name="tipologiaRichiestaAssistenza">
-                            <option disabled selected>Inserisci Motivazione</option>
-                            <option th:each="tipo : ${tipologia}"
-                                    th:value="${tipo}"
-                                    th:text="${tipo}">RICHIESTA GENERICA</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="col-5">
+                                <select class="form-select form-select-sm" aria-label="Small select example" name="responsabile">
+                                    <option disabled selected>Seleziona Responsabile</option>
+                                    <div th:each="utente : ${listUtentiAdmin}">
+                                        <option  th:value="${utente.idUtente}"
+                                                 th:text="${utente.username}">federico.molino</option>
+                                    </div>
+                                </select>
+                            </div>
 
-            <!--Motivo della richiesta-->
-            <div class="row col-6 mt-5">
-                <label>Inserisci richiesta</label>
-                <div class="row col-10">
-                    <div id="textAreaRichiesta">
-                    <textarea class="form-control" id="validationTextarea"
-                              placeholder="Inserisci la tua richiesta" required style="height: 130px;"
-                              name="richiesta"></textarea>
-                        <div class="invalid-feedback">
-                            Devi inserire la tua richiesta
+                            <div class="col-5">
+                                <select class="form-select form-select-sm" aria-label="Small select example"
+                                        name="tipologiaRichiestaAssistenza">
+                                    <option disabled selected>Inserisci Motivazione</option>
+                                    <option th:each="tipo : ${tipologia}"
+                                            th:value="${tipo}"
+                                            th:text="${tipo}">RICHIESTA GENERICA</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!--Inoltra richiesta-->
-            <div class="mt-3">
-                <button type="submit" class="btn btn-sm btn-outline-secondary">Invia Richiesta</button>
+                    <!--Motivo della richiesta-->
+                    <div class="row col-12 mt-5">
+                        <label>Inserisci richiesta</label>
+                        <div class="row col-10">
+                            <div>
+                                <textarea
+                                      class="form-control"
+                                      placeholder="Inserisci la tua richiesta"
+                                      required style="height: 130px;"
+                                      name="richiesta" maxlength="255"
+                                      id="textAreaRichiesta"
+                                      oninput="toggleTextAreaRichiesta()"></textarea>
+                                <div class="text-danger mt-2" id="errorTextAreaDiv">
+                                    Devi inserire la tua richiesta
+                                </div>
+                                <div class="d-none text-danger mt-2" id="errorLenghtTextAreaDiv">
+                                    Limite massimo di 255 caratteri raggiunto
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Inoltra richiesta-->
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                id="buttonInoltraRichiesta"
+                                disabled
+                        >Invia Richiesta</button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src ="/Assistenza.js"></script>
 </body>
 </html>
