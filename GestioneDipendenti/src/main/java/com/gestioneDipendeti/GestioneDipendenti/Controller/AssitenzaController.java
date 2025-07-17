@@ -18,6 +18,7 @@ import javax.naming.AuthenticationException;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("assistenza")
@@ -47,6 +48,13 @@ public class AssitenzaController {
                                          @RequestParam("richiesta") String richiesta,
                                          Principal principal,
                                          RedirectAttributes redirectAttributes){
+        Optional<Utente> utenteResponsabile = utenteRepository.findById(idUtente);
+        if (utenteResponsabile.isEmpty()){
+            redirectAttributes.addFlashAttribute("errorMessage","Errore nella compilazione dei dati" +
+                    " 'Responsabile non presente a sistema'");
+            return "redirect:/assistenza";
+        }
+
         if (!tipologiaRichiestaAssistenza.equals(TipologiaRichiestaAssistenza.RICHIESTA_GENERICA) &&
                 !tipologiaRichiestaAssistenza.equals(TipologiaRichiestaAssistenza.FERIE) &&
                 tipologiaRichiestaAssistenza.equals(TipologiaRichiestaAssistenza.MANCATA_TIMBRATURA)){

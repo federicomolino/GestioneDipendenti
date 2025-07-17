@@ -3,6 +3,8 @@ function toggleTextAreaRichiesta(){
     const errorTextAreaDiv = document.getElementById("errorTextAreaDiv");
     const errorLenghtTextAreaDiv = document.getElementById("errorLenghtTextAreaDiv");
     const buttonInoltraRichiesta = document.getElementById("buttonInoltraRichiesta")
+    const selezionaResponsabile = document.getElementById("selezionaResponsabile").value;
+    const motivazioneRichiesta = document.getElementById("motivazioneRichiesta").value;
 
     const value = textAreaRichiesta.value.trim();
 
@@ -21,7 +23,7 @@ function toggleTextAreaRichiesta(){
     }
 
     //Verifico quando abilitare il buttone
-    if(value !== "" && value.length <= 255){
+    if(value !== "" && value.length <= 255 && selezionaResponsabile !== "" && motivazioneRichiesta !== ""){
         buttonInoltraRichiesta.disabled = false;
     }else{
         buttonInoltraRichiesta.disabled = true;
