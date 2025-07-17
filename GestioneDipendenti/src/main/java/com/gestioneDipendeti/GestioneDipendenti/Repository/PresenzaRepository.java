@@ -20,6 +20,12 @@ public interface PresenzaRepository extends JpaRepository<Presenza, Long> {
             "order by data desc")
     List<Presenza> findByListPrenseza(@Param("dipendente") Dipendente dipendente);
 
+    //Ricerca per anno e mese
+    @Query(value = "select p from Presenza p where p.dipendente = :dipendente " +
+                    "and function('DATE_FORMAT', p.data, '%Y-%m') = :mese")
+    List<Presenza> findByMeseLike(@Param("dipendente") Dipendente dipendente, @Param("mese") String mese);
+
+    //Ricerca giorno mese e anno
     @Query("select p from Presenza p where function('DATE_FORMAT', p.data, '%Y-%m-%d') = :data " +
             "and p.dipendente = :dipendente order by p.data DESC")
     List<Presenza> findBySearchData(@Param("dipendente") Dipendente dipendente, @Param("data") String data);

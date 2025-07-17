@@ -130,7 +130,8 @@
                                         <div class="row mb-2" id="oraEntrataInput" style="display: block;">
                                             <div class="col-sm-6 fw-bold">Ora Entrata:</div>
                                             <div class="col-sm-8">
-                                                <input type="time" th:field="*{oraEntrata}">
+                                                <input type="time" th:field="*{oraEntrata}"
+                                                       class="form-control-sm border rounded-4 shadow-sm">
                                             </div>
                                             <div th:if="${OraEntrataError}" class="alert alert-warning
                                             d-flex justify-content-between mt-2 col-8 ms-3">
@@ -141,7 +142,8 @@
                                         <div class="row mb-2" id="oraUscitaInput" style="display: block;">
                                             <div class="col-sm-6 fw-bold">Ora Uscita:</div>
                                             <div class="col-sm-8">
-                                                <input type="time" th:field="*{oraUscita}">
+                                                <input type="time" th:field="*{oraUscita}"
+                                                       class="form-control-sm border rounded-4 shadow-sm">
                                             </div>
                                             <div th:if="${OraUscitaError}" class="alert alert-warning
                                             d-flex justify-content-between mt-2 col-8 ms-3">
@@ -152,7 +154,7 @@
                                         <div class="row mb-2">
                                             <div class="col-sm-6 fw-bold">Modalità</div>
                                             <div class="col-sm-8">
-                                                <select class="form-select form-select-sm" aria-label="Small select example"
+                                                <select class="form-select form-select-sm rounded-4 shadow-sm" aria-label="Small select example"
                                                         th:field="*{modalita}">
                                                     <option value="" disabled selected>Seleziona la modalità</option>
                                                     <option value="UFFICIO">UFFICIO</option>
@@ -169,7 +171,7 @@
                                         <div class="row mb-2">
                                             <div class="col-sm-6 fw-bold">Stato</div>
                                             <div class="col-sm-8">
-                                                <select class="form-select form-select-sm" aria-label="Small select example"
+                                                <select class="form-select form-select-sm  rounded-4 shadow-sm"
                                                         th:field="*{stato}" id="statoSelect" onchange="toggleDataInput()">
                                                     <option value="" disabled selected>Seleziona il tuo stato</option>
                                                     <option value="PRESENTE">PRESENTE</option>

@@ -112,18 +112,31 @@ public class PresenzaController {
                                Model model, Principal principal, RedirectAttributes redirectAttributes){
         Dipendente dipendente = loginService.recuperoDipendente(principal);
         Optional<Contratto> contratto = contrattoRepository.findBydipendente(dipendente);
+
         if (!contratto.isPresent()){
             redirectAttributes.addFlashAttribute("presenzaError","L'utente non ha un contratto");
             return "redirect:/";
         }
-        float oreFerieRimanenti = contratto.get().getOreFerieTotali() - contratto.get().getOreFerieUtilizzate();
-        if (ricercaData == null || ricercaData.isEmpty()){
+
+        String ricercaDataFormat = "";
+
+        // Prima controlla se è null
+        if (ricercaData == null || ricercaData.isEmpty() || ricercaData.equals(",")) {
             model.addAttribute("listaPresenze", presenzaRepository.findByListPrenseza(dipendente));
-            model.addAttribute("oreFerieRimanenti",oreFerieRimanenti);
-        }else {
-            model.addAttribute("listaPresenze", presenzaRepository.findBySearchData(dipendente,ricercaData));
-            model.addAttribute("oreFerieRimanenti",oreFerieRimanenti);
+        } else if (ricercaData.startsWith(",") && ricercaData.length() >= 4) {
+            ricercaDataFormat = ricercaData.substring(1);
+            model.addAttribute("listaPresenze", presenzaRepository.findByMeseLike(dipendente, ricercaDataFormat));
+        } else if (ricercaData.endsWith(",")) {
+            ricercaDataFormat = ricercaData.substring(0, 10);
+            model.addAttribute("listaPresenze", presenzaRepository.findBySearchData(dipendente, ricercaDataFormat));
+        } else {
+            ricercaDataFormat = ricercaData;
+            model.addAttribute("listaPresenze", presenzaRepository.findBySearchData(dipendente, ricercaDataFormat));
         }
+
+        float oreFerieRimanenti = contratto.get().getOreFerieTotali() - contratto.get().getOreFerieUtilizzate();
+        model.addAttribute("oreFerieRimanenti", oreFerieRimanenti);
+
         return "Calendar/Calendar";
     }
 

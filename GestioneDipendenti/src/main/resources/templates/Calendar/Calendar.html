@@ -28,14 +28,34 @@
         <div>
           <h2 class="mb-4 text-center">Presenze Mese Corrente</h2>
         </div>
+
         <!--Ricerca Per data-->
         <div class="d-flex justify-content-between">
-          <div class="row col-2">
-            <label class="mb-1">Ricerca per mese</label>
+          <div class="row col-3">
+            <label class="mb-1">Ricerca per mese o singolo giorno</label>
+
+            <div class="col-10" id="selectOpzioneDiv">
+              <select class="form-select form-select-sm" aria-label="Small select example"
+                      id="selectOpzione">
+                <option selected disabled value="">Selezione per data o mese</option>
+                <option value="Data">Data</option>
+                <option value="Mese">Mese</option>
+              </select>
+            </div>
+
             <form class="d-flex" role="search" method="get" th:action="@{/presenza/calendar}">
-              <input class="form-control mb-2 me-2" type="date" placeholder="Cerca per data" aria-label="Search"
-                     name="ricercaData"/>
-              <div class="mt-1">
+              <!--Ricerca per giorno, mese e anno-->
+              <div class="col-6 d-none mt-2" id="ricercaPerGiornoDiv">
+                <input class="form-control form-select-sm mb-2 me-2" type="date" placeholder="Cerca per data" aria-label="Search"
+                       name="ricercaData" id="ricercaPerGiorno"/>
+              </div>
+
+              <!--Ricerca per mese e anno-->
+              <div class="col-6 d-none mt-2" id="ricercaPerMeseDiv">
+                <input class="form-control form-select-sm mb-2 me-2" type="month" placeholder="Cerca per data" aria-label="Search"
+                       name="ricercaData" id="ricercaPerMese"/>
+              </div>
+              <div class="mt-2 ms-2 d-none" id="buttonRicercaDiv">
                 <button class="btn btn-outline-success btn-sm" type="submit">Cerca</button>
               </div>
             </form>
@@ -59,8 +79,8 @@
               <th>Completa Giornata</th>
             </tr>
             </thead>
-            <tbody>
-            <tr th:each="presenza : ${listaPresenze}">
+            <tbody id="presenzaTableBody">
+            <tr th:each="presenza : ${listaPresenze}" class="presenza-row">
               <td th:text="${presenza.data}">01/06/2025</td>
               <td th:text="${presenza.oraEntrata}">09:00</td>
               <td th:text="${presenza.oraUscita}">17:00</td>
@@ -111,7 +131,14 @@
             </tr>
             </tbody>
           </table>
+
+          <div class="d-flex justify-content-center align-items-center mt-3 gap-2">
+            <button class="btn btn-outline-success border btn-sm" onclick="cambiaPagina(-1)">←</button>
+            <span id="paginaCorrente" class="mx-2">1</span>
+            <button class="btn btn-outline-success border btn-sm" onclick="cambiaPagina(1)">→</button>
+          </div>
         </div>
+
         <div class="col-4">
           <form method="post" th:action="@{/presenza/add-presenza/file}" enctype="multipart/form-data">
             <div class="input-group">
@@ -128,8 +155,8 @@
             </div>
           </form>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
 </div>
