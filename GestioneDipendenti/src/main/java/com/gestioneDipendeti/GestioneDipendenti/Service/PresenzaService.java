@@ -43,7 +43,7 @@ public class PresenzaService {
         LocalTime oraUscita = presenza.getOraUscita();
 
         //Presenza già presente a DB
-        boolean presenzaData = presenzaRepository.existsByDataAndDipendente(LocalDate.now(), dipendente);
+        boolean presenzaData = presenzaRepository.existsByDataAndDipendente(presenza.getData(), dipendente);
         if (presenzaData){
             log.warning("Riga già presente nel db");
             throw new IllegalArgumentException("Riga già presente nel db");
