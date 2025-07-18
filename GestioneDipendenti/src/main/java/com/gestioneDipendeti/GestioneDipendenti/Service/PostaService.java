@@ -20,4 +20,12 @@ public class PostaService {
             assistenzaRepository.save(assistenza);
         }
     }
+
+    public void leggiRichiesteAssistenza(List<Long> idAssistenzaList){
+        for (Long idRichiesta : idAssistenzaList){
+            Assistenza assistenza = assistenzaRepository.findById(idRichiesta).get();
+            assistenza.setComunicazioneLetta(true);
+            assistenzaRepository.save(assistenza);
+        }
+    }
 }

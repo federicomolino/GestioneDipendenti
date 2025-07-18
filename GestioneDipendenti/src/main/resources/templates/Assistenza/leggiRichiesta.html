@@ -31,8 +31,16 @@
 
     <div class="d-flex">
         <div class="col-5 mt-3">
+            <label>Richiesta:</label>
             <div class="border rounded p-2">
                 <span class="ms-3" th:text="${assistenza.richiesta}">Ciao la mia richiesta fa riferimento...</span>
+            </div>
+
+            <div th:if="${assistenza.rispostaAssistenza != null}">
+                <label class="mt-4">Risposta:</label>
+                <div class="border rounded p-2">
+                    <span class="ms-3" th:text="${assistenza.rispostaAssistenza}">Risposta...</span>
+                </div>
             </div>
 
             <div th:if="${assistenza.richiestaChiusa == false}" class="mt-3 d-flex justify-content-end" sec:authorize="hasAuthority('ADMIN')">
@@ -40,6 +48,14 @@
                     <button type="submit" class="btn btn-sm btn-success">Chiudi Richiesta</button>
                 </form>
             </div>
+
+            <!--Vedranno solo gli USER-->
+            <div th:if="${assistenza.comunicazioneLetta == false}" class="mt-3 d-flex justify-content-end" sec:authorize="hasAuthority('USER') and not hasAuthority('ADMIN')">
+                <form method="post" th:action="@{/posta/richiesta/comunicazione-letta/{idAssistenza}(idAssistenza=${assistenza.idAssistenza})}">
+                    <button type="submit" class="btn btn-sm btn-success">Segna come letta</button>
+                </form>
+            </div>
+
             <div th:unless="${assistenza.richiestaChiusa == false}" class="mt-3">
                 <span>La richiesta è chiusa</span>
             </div>

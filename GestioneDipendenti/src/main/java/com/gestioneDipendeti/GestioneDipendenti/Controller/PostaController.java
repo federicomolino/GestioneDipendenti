@@ -44,9 +44,11 @@ public class PostaController {
         Utente utente = loginService.recuperoUtente(principal);
         Optional<Utente> utenteConRuolo2 = utenteRepository.findUtenteConSoloRuolo2(utente.getIdUtente());
         if (utenteConRuolo2.isEmpty()){
-            model.addAttribute("listPosta",assistenzaRepository.findByUtente_IdUtenteOrderByIdAssistenzaDesc(utente.getIdUtente()));
+            model.addAttribute("listPosta",
+                    assistenzaRepository.findByUtente_IdUtenteOrderByIdAssistenzaDesc(utente.getIdUtente()));
         }else{
-            model.addAttribute("listPosta",assistenzaRepository.findByIdUtenteAperturaOrderByIdAssistenzaDesc(utente.getIdUtente()));
+            model.addAttribute("listPosta",
+                    assistenzaRepository.findByIdUtenteAperturaOrderByIdAssistenzaDesc(utente.getIdUtente()));
         }
         return "Assistenza/posta";
     }
@@ -135,5 +137,13 @@ public class PostaController {
             redirectAttributes.addFlashAttribute("errorMessage","Orario non valido");
             return "redirect:/posta/richiesta/" + idAssistenza;
         }
+    }
+
+    @PostMapping("/richiesta/comunicazione-letta/{idAssistenza}")
+    public String leggiRispostaRichiesta(@PathVariable("idAssistenza")long idAssistenza){
+        List<Long> idRichiesteAssistenza = new ArrayList();
+        idRichiesteAssistenza.add(idAssistenza);
+        postaService.leggiRichiesteAssistenza(idRichiesteAssistenza);
+        return "redirect:/posta/richiesta/" + idAssistenza;
     }
 }

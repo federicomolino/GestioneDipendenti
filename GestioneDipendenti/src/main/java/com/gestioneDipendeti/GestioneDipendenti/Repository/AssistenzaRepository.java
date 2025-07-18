@@ -15,4 +15,6 @@ public interface AssistenzaRepository extends JpaRepository<Assistenza,Long> {
 
     List<Assistenza> findByIdUtenteAperturaOrderByIdAssistenzaDesc(long idUtente);
 
+    // Metodo personalizzato per ottenere le assistenze con idUtenteApertura = 28 e rispostaAssistenza non null
+    int countByIdUtenteAperturaAndRispostaAssistenzaIsNotNullAndComunicazioneLettaFalse(long idUtenteApertura);
 }

@@ -34,6 +34,17 @@ public class Assistenza {
     @Column(name = "risposta_assistenza")
     private String rispostaAssistenza;
 
+    @Column(name = "comunicazione_letta")
+    private boolean comunicazioneLetta;
+
+    public boolean isComunicazioneLetta() {
+        return comunicazioneLetta;
+    }
+
+    public void setComunicazioneLetta(boolean comunicazioneLetta) {
+        this.comunicazioneLetta = comunicazioneLetta;
+    }
+
     public String getRispostaAssistenza() {
         return rispostaAssistenza;
     }
