@@ -44,7 +44,7 @@ public class AssistenzaService {
         assistenzaAperta.setTipologiaRichiestaAssistenza(tipologiaRichiestaAssistenza);
         assistenzaAperta.setRichiestaChiusa(false);
         assistenzaAperta.setUtente(utenteAdmin);
-        assistenzaAperta.setIdUteneApertura(idUtenteApertoRichiesto);
+        assistenzaAperta.setIdUtenteApertura(idUtenteApertoRichiesto);
         assistenzaAperta.setOrarioApertura(dataAperturaRichiesta);
         logAssistenza.info("Richiesta Creata");
         return assistenzaRepository.save(assistenzaAperta);

@@ -2,6 +2,13 @@ function aggiungiPresenza(){
     const motivazioneRichiesta = document.getElementById("motivazioneRichiesta");
     const inserisciPresenza = document.getElementById("inserisciPresenza");
     const selezionaDipendente = document.getElementById("selezionaDipendente");
+    const richiestaFerie = document.getElementById("richiestaFerie");
+    const buttonAggiungiFerie = document.getElementById("buttonAggiungiFerie");
+    const inserisciRisposta = document.getElementById("inserisciRisposta");
+    const rispostaGenerica = document.getElementById("rispostaGenerica");
+    const buttonAggiungiRisposta = document.getElementById("buttonAggiungiRisposta");
+    const textAreaRispostaGenerica = document.getElementById("textAreaRispostaGenerica");
+
 
     let motivazione = motivazioneRichiesta.value;
     let dipendente = selezionaDipendente.value;
@@ -9,9 +16,39 @@ function aggiungiPresenza(){
     if(dipendente !== "" && motivazione === "MANCATA_TIMBRATURA"){
         inserisciPresenza.classList.remove("d-none");
         inserisciPresenza.classList.add("d-block");
+
+        rispostaGenerica.classList.add("d-none");
+        rispostaGenerica.classList.remove("d-block");
     }else{
         inserisciPresenza.classList.remove("d-block");
         inserisciPresenza.classList.add("d-none");
+    }
+
+    if(dipendente !== "" && motivazione === "FERIE"){
+            richiestaFerie.classList.remove("d-none");
+            richiestaFerie.classList.add("d-block");
+
+            inserisciRisposta.classList.remove("d-none");
+            inserisciRisposta.classList.add("d-block");
+
+            rispostaGenerica.classList.add("d-none");
+            rispostaGenerica.classList.remove("d-block");
+
+            buttonAggiungiFerie.disabled = false;
+    }else{
+        richiestaFerie.classList.remove("d-block");
+        richiestaFerie.classList.add("d-none");
+    }
+
+    if(dipendente !== "" && motivazione === "RICHIESTA_GENERICA"){
+        rispostaGenerica.classList.remove("d-none");
+        rispostaGenerica.classList.add("d-block");
+
+        if(textAreaRispostaGenerica.value.trim() !== ""){
+            buttonAggiungiRisposta.disabled = false;
+        }else{
+            buttonAggiungiRisposta.disabled = true;
+        }
     }
 }
 
@@ -54,4 +91,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("motivazioneRichiesta").addEventListener("change",aggiungiPresenza);
     document.getElementById("selezionaDipendente").addEventListener("change", aggiungiPresenza);
+    document.getElementById("richiestaFerie").addEventListener("change", aggiungiPresenza);
+    // Listener per abilitare/disabilitare bottone mentre scrivi nella textarea
+    document.getElementById("textAreaRispostaGenerica").addEventListener("input", function() {
+        const button = document.getElementById("buttonAggiungiRisposta");
+        button.disabled = this.value.trim() === "";
+    });
 });

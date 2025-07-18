@@ -12,4 +12,7 @@ public interface AssistenzaRepository extends JpaRepository<Assistenza,Long> {
 
     @Query("select count(a) from Assistenza a where a.utente.idUtente = :idUtente AND a.richiestaChiusa = false")
     Long countRichiesteApertePerUtente(@Param("idUtente") Long idUtente);
+
+    List<Assistenza> findByIdUtenteAperturaOrderByIdAssistenzaDesc(long idUtente);
+
 }

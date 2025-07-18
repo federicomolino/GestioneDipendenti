@@ -26,17 +26,28 @@ public class Assistenza {
     private Utente utente;
 
     @Column(name = "id_utente_apertura")
-    private long idUteneApertura;
+    private long idUtenteApertura;
 
     @Column(name = "ora_apertura")
     private LocalDate orarioApertura;
 
-    public long getIdUteneApertura() {
-        return idUteneApertura;
+    @Column(name = "risposta_assistenza")
+    private String rispostaAssistenza;
+
+    public String getRispostaAssistenza() {
+        return rispostaAssistenza;
     }
 
-    public void setIdUteneApertura(long idUteneApertura) {
-        this.idUteneApertura = idUteneApertura;
+    public void setRispostaAssistenza(String rispostaAssistenza) {
+        this.rispostaAssistenza = rispostaAssistenza;
+    }
+
+    public long getIdUtenteApertura() {
+        return idUtenteApertura;
+    }
+
+    public void setIdUtenteApertura(long idUtenteApertura) {
+        this.idUtenteApertura = idUtenteApertura;
     }
 
     public LocalDate getOrarioApertura() {

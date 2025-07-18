@@ -20,4 +20,16 @@ public interface UtenteRepository extends JpaRepository<Utente, Long> {
 
     @Query("select u FROM Utente u JOIN u.role r WHERE u.idUtente = :idUtente AND r.idRole = :idRole")
     Optional<Utente> findByIdAndRoleId(@Param("idUtente") Long idUtente, @Param("idRole") Long idRole);
+
+    @Query("""
+    SELECT u FROM Utente u
+    JOIN u.role r
+    WHERE u.idUtente = :idUtente
+      AND r.idRole = 2
+      AND NOT EXISTS (
+          SELECT r2 FROM Utente u2 JOIN u2.role r2
+          WHERE u2 = u AND r2.idRole <> 2
+      )
+    """)
+    Optional<Utente> findUtenteConSoloRuolo2(@Param("idUtente") Long idUtente);
 }

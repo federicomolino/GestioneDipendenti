@@ -35,7 +35,7 @@
                 <span class="ms-3" th:text="${assistenza.richiesta}">Ciao la mia richiesta fa riferimento...</span>
             </div>
 
-            <div th:if="${assistenza.richiestaChiusa == false}" class="mt-3 d-flex justify-content-end">
+            <div th:if="${assistenza.richiestaChiusa == false}" class="mt-3 d-flex justify-content-end" sec:authorize="hasAuthority('ADMIN')">
                 <form method="post" th:action="@{/posta/richiesta/{idAssistenza}(idAssistenza=${assistenza.idAssistenza})}">
                     <button type="submit" class="btn btn-sm btn-success">Chiudi Richiesta</button>
                 </form>
@@ -46,8 +46,9 @@
         </div>
 
         <!--Concludi richiesta-->
-        <div class="ms-5">
-            <form th:action="@{/posta/chiudi-richiesta}" method="post" th:object="${chiudiRichiesta}">
+        <div class="ms-5" sec:authorize="hasAuthority('ADMIN')">
+            <form th:action="@{/posta/chiudi-richiesta/{idAssistenza}(idAssistenza=${assistenza.idAssistenza})}"
+                  method="post" th:object="${chiudiRichiesta}">
                 <div class="border border-success p-3 rounded-2 mt-3">
                     <label>Seleziona Dipendente <span class="text-danger">*</span></label>
                     <select class="form-select form-select-sm"
@@ -62,10 +63,10 @@
 
                     <label class="mt-2">Inserisci la motivazione <span class="text-danger">*</span></label>
                     <select class="form-select form-select-sm" aria-label="Small select example"
-                            id="motivazioneRichiesta">
+                            id="motivazioneRichiesta" name="motivazioneRichiesta">
                         <option selected disabled value="">Seleziona motivazione</option>
                         <option value="MANCATA_TIMBRATURA">MANCATA TIMBRATURA</option>
-                        <option value="RICHIESTA GENERICA">RICHIESTA_GENERICA</option>
+                        <option value="RICHIESTA_GENERICA">RICHIESTA GENERICA</option>
                         <option value="FERIE">FERIE</option>
                     </select>
 
@@ -116,6 +117,54 @@
                         <!--Invia richiesta-->
                         <div class="mt-3 d-flex justify-content-end">
                             <button type="submit" class="btn btn-sm btn-success" id="buttonAggiungiPresenza"
+                                    disabled>Aggiungi</button>
+                        </div>
+                    </div>
+
+                    <!--Ferie-->
+                    <div class="row d-none" id="richiestaFerie">
+                        <label class="mt-3">Accetta Richiesta Ferie <span class="text-danger">*</span></label>
+                        <div>
+                            <div class="form-check form-check-sm">
+                                <input class="form-check-input form-check-input-sm" type="radio" id="radioDefault1"
+                                       name="ferieDecisione" value="Si">
+                                <label class="form-check-label small" for="radioDefault1">
+                                    Si
+                                </label>
+                            </div>
+                            <div class="form-check form-check-sm">
+                                <input class="form-check-input form-check-input-sm" type="radio" id="radioDefault2" checked
+                                       name="ferieDecisione" value="No">
+                                <label class="form-check-label small" for="radioDefault2">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+
+                        <!--Risposta-->
+                        <div id="inserisciRisposta">
+                            <label>Inserisci la Risposta</label>
+                            <div>
+                                <textarea class="border rounded p-2 col-12" name="rispostaRichiestaAssistenza"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-sm btn-success" id="buttonAggiungiFerie"
+                                    disabled>Aggiungi</button>
+                        </div>
+                    </div>
+
+                    <!--Riposta Generica-->
+                    <div id="rispostaGenerica" class="row d-none">
+                        <label class="mt-3">Inserisci la tua risposta <span class="text-danger">*</span></label>
+                        <div>
+                            <textarea class="border rounded p-2 col-12" id="textAreaRispostaGenerica"
+                            name="rispostaGenerica"></textarea>
+                        </div>
+
+                        <div class="mt-3 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-sm btn-success" id="buttonAggiungiRisposta"
                                     disabled>Aggiungi</button>
                         </div>
                     </div>
