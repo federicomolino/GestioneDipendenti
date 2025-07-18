@@ -36,7 +36,7 @@
     </div>
 
     <form method="post" th:action="@{/posta}">
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-end" sec:authorize="hasAuthority('ADMIN')">
             <button type="submit" class="btn btn-secondary"
                     style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                 Chiudi Richieste
