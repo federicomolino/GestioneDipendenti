@@ -57,7 +57,7 @@ public class AssitenzaController {
 
         if (!tipologiaRichiestaAssistenza.equals(TipologiaRichiestaAssistenza.RICHIESTA_GENERICA) &&
                 !tipologiaRichiestaAssistenza.equals(TipologiaRichiestaAssistenza.FERIE) &&
-                tipologiaRichiestaAssistenza.equals(TipologiaRichiestaAssistenza.MANCATA_TIMBRATURA)){
+                !tipologiaRichiestaAssistenza.equals(TipologiaRichiestaAssistenza.MANCATA_TIMBRATURA)){
             redirectAttributes.addFlashAttribute("errorMessage","Errore nella compilazione dei dati" +
                     " 'Motiviazine Richiesta'");
             return "redirect:/assistenza";
