@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -102,6 +103,9 @@ public class PresenzaController {
             redirectAttributes.addFlashAttribute("presenzaSuccess","Presenza Salvata con successo");
         }catch (DataFormatException ex){
             redirectAttributes.addFlashAttribute("presenzaError","Orari del permesso inseriti errati");
+            return "redirect:/";
+        }catch (DateTimeException ex){
+            redirectAttributes.addFlashAttribute("presenzaError","Non è possibile inserire presenze nel weekend.");
             return "redirect:/";
         }
         return "redirect:/";

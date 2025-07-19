@@ -11,9 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.Principal;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,12 +33,18 @@ public class PresenzaService {
     private static final Logger log = Logger.getLogger(PresenzaService.class.getName());
 
 
-    public Presenza addPreseza (Presenza presenza, Principal principal) throws IllegalArgumentException, DataFormatException{
+    public Presenza addPreseza (Presenza presenza, Principal principal) throws IllegalArgumentException, DataFormatException, DateTimeException{
         //Setto id Utente
         Utente utente = loginService.recuperoUtente(principal);
         Dipendente dipendente = utente.getDipendente();
         LocalTime oraEntrata = presenza.getOraEntrata();
         LocalTime oraUscita = presenza.getOraUscita();
+
+        //Controllo se la data è di sabato o dominica
+        if (presenza.getData().getDayOfWeek()  == DayOfWeek.SATURDAY || presenza.getData().getDayOfWeek() == DayOfWeek.SUNDAY){
+            log.warning("Non è possibile aggiungere di sabato o domenica la presenza");
+            throw new DateTimeException("Non è possibile aggiungere di sabato o domenica la presenza");
+        }
 
         //Presenza già presente a DB
         boolean presenzaData = presenzaRepository.existsByDataAndDipendente(presenza.getData(), dipendente);

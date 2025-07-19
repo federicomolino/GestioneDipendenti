@@ -31,3 +31,32 @@ function toggleDataInput (){
         permessoDiv.style.display = "none";
     }
 }
+
+function timbraturaFeriali(){
+    const addTimbratura = document.getElementById("addTimbratura");
+    const dataGiornaliera = document.getElementById("dataGiornaliera");
+    const alertWeekEnd = document.getElementById("alertWeekEnd");
+
+    //Mi prendo la data
+    const data = dataGiornaliera.textContent.trim();
+    //converto da gg/mm/yyyy a ogetto date
+    const [giorno, mese, anno] = data.split("/").map(Number);
+    const dataNuova = new Date(anno, mese-1, giorno);
+    const giornoSettimana = dataNuova.getDay();
+
+
+    if(giornoSettimana == 0 || giornoSettimana == 6){
+        alertWeekEnd.classList.remove("d-none");
+        alertWeekEnd.classList.add("d-block");
+        addTimbratura.disabled = true;
+    }else{
+        alertWeekEnd.classList.add("d-none");
+        alertWeekEnd.classList.remove("d-block");
+        addTimbratura.disabled = false;
+    }
+}
+
+/*Comportamento dinamico della select in automatico*/
+document.addEventListener("DOMContentLoaded", function () {
+    timbraturaFeriali();
+});

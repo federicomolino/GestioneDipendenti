@@ -28,6 +28,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
 
+                <!--Alert per weekend-->
+                <div class="alert alert-warning d-flex justify-content-between mt-2 col-4 mx-auto d-none" id="alertWeekEnd">
+                    <span>Non è possibile timbrare nel week-end</span>
+                </div>
+
                 <div class="d-flex justify-content-between">
                     <div class="col-4">
                         <!--I miei dati-->
@@ -100,7 +105,7 @@
                                         </tr>
 
                                         <tr th:if="${presenzaGiornaliera == null}">
-                                            <strong>Nessuna timbratura effettuata oggi!!!</strong>
+                                            <strong id="infoTimbratura">Nessuna timbratura effettuata oggi!!!</strong>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -120,7 +125,7 @@
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-sm-6 fw-bold">Giorno:</div>
-                                            <div class="col-sm-8" th:text="*{data}">14/06/2025</div>
+                                            <div class="col-sm-8" th:text="${#temporals.format(formAddPresenza.data, 'dd/MM/yyyy')}" id="dataGiornaliera">14/06/2025</div>
                                             <div th:if="${dataError}" class="alert alert-warning
                                             d-flex justify-content-between mt-2 col-8 ms-3">
                                                 <span th:text="${dataError}">Data inserita non valida</span>
@@ -235,7 +240,7 @@
                                     </div>
                                     <!--Aggiunta-->
                                     <div class="mb-2 text-end me-3">
-                                        <button type="submit" class="btn btn-success btn-sm">Aggiungi</button>
+                                        <button type="submit" class="btn btn-success btn-sm" id="addTimbratura">Aggiungi</button>
                                     </div>
                                 </div>
                             </form>
