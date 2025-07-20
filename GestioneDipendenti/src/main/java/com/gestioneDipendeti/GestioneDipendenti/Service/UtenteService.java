@@ -1,9 +1,8 @@
 package com.gestioneDipendeti.GestioneDipendenti.Service;
 
 import com.gestioneDipendeti.GestioneDipendenti.DTO.NuovoUtenteDTO;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Role;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Utente;
+import com.gestioneDipendeti.GestioneDipendenti.Entity.*;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.DipendenteRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.RoleRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.UtenteRepository;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +35,9 @@ public class UtenteService {
 
     @Autowired
     private JavaMailSender javaMailSender;
+
+    @Autowired
+    private ContrattoRepository contrattoRepository;
 
     public Dipendente addDipendente(NuovoUtenteDTO nuovoUtenteDTO){
         Utente utenteCreato = utenteRepository.findTopByOrderByIdUtenteDesc();
@@ -148,5 +151,26 @@ public class UtenteService {
         }else {
             return false;
         }
+    }
+
+    public List<Long> contrattiScaduti(List<Utente> utenti){
+        //Lista degli utenti con contratto scaduto
+        List<Long> utentiConContrattoScaduto = new ArrayList<>();
+        for(Utente u : utenti){
+            Dipendente dipendente = dipendenteRepository.findByUtenteId(u.getIdUtente());
+            Optional<Contratto> contattoPerUtente = contrattoRepository.findBydipendente(dipendente);
+            if (contattoPerUtente.isPresent()){
+                if (contattoPerUtente.get().getTipologiaContratto().equals(tipologiaContratto.DETERMINATO) ||
+                        contattoPerUtente.get().getTipologiaContratto().equals(tipologiaContratto.APPRENDISTATO) ||
+                        contattoPerUtente.get().getTipologiaContratto().equals(tipologiaContratto.PARTTIME) ||
+                        contattoPerUtente.get().getTipologiaContratto().equals(tipologiaContratto.INTERMITTENTE)){
+                    //Aggiungi alla lista gli id dei dipendenti che hanno il contratto scaduto
+                    if (contattoPerUtente.get().getDataFine().isBefore(LocalDate.now())){
+                        utentiConContrattoScaduto.add(u.getIdUtente());
+                    }
+                }
+            }
+        }
+        return utentiConContrattoScaduto;
     }
 }

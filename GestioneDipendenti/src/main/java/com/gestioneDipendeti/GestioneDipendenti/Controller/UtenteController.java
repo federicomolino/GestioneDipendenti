@@ -50,6 +50,7 @@ UtenteController {
         List<Utente> utenti = utenteRepository.findAll();
         model.addAttribute("formNewUtente", new NuovoUtenteDTO());
         model.addAttribute("listUtenti",utenti);
+        model.addAttribute("utentiConContrattoScaduto",utenteService.contrattiScaduti(utenti));
         return "Utente/newUtente";
     }
 
