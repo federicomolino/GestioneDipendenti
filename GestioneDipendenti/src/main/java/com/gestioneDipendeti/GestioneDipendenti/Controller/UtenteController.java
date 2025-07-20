@@ -4,6 +4,7 @@ import com.gestioneDipendeti.GestioneDipendenti.DTO.NuovoUtenteDTO;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Role;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Utente;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.DipendenteRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.RoleRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.UtenteRepository;
@@ -45,12 +46,18 @@ UtenteController {
     @Autowired
     private LoginService loginService;
 
+    @Autowired
+    private ContrattoRepository contrattoRepository;
+
     @GetMapping("/nuovoUtente")
     public String showNuovoUtente(Model model){
         List<Utente> utenti = utenteRepository.findAll();
+        //Verifico se ci sono contratti scaduti
+        List<Long> utentiConContrattoScaduto = contrattoRepository.findIdUtenteWithContrattoScaduto();
+
         model.addAttribute("formNewUtente", new NuovoUtenteDTO());
         model.addAttribute("listUtenti",utenti);
-        model.addAttribute("utentiConContrattoScaduto",utenteService.contrattiScaduti(utenti));
+        model.addAttribute("utentiConContrattoScaduto",utentiConContrattoScaduto);
         return "Utente/newUtente";
     }
 

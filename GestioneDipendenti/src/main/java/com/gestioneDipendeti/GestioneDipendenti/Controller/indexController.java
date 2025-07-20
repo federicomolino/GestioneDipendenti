@@ -6,6 +6,7 @@ import com.gestioneDipendeti.GestioneDipendenti.Entity.Presenza;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Utente;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.*;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
+import com.gestioneDipendeti.GestioneDipendenti.Service.UtenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -37,6 +39,9 @@ public class indexController {
 
     @Autowired
     private AssistenzaRepository assistenzaRepository;
+
+    @Autowired
+    private UtenteService utenteService;
 
     @GetMapping()
     public String showUtente(Model model, Principal principal){
@@ -63,6 +68,10 @@ public class indexController {
             model.addAttribute("Contratto", contratto);
             model.addAttribute("oreFerieRimaste", oreFerieRimaste);
         }
+
+        //Verifico se ci sono contratti in scadenza
+        List<Utente> utenti = utenteRepository.findAll();
+        utenteService.contrattiScaduti(utenti);
         return "Index/Index";
     }
 }

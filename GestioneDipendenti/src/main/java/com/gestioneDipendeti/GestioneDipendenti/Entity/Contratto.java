@@ -37,6 +37,17 @@ public class Contratto {
     @JsonBackReference
     private Dipendente dipendente;
 
+    @Column(name = "contratto_scaduto")
+    private boolean isScaduto;
+
+    public boolean isScaduto() {
+        return isScaduto;
+    }
+
+    public void setScaduto(boolean scaduto) {
+        isScaduto = scaduto;
+    }
+
     private float oreFerieTotali;
 
     private float oreFerieUtilizzate;

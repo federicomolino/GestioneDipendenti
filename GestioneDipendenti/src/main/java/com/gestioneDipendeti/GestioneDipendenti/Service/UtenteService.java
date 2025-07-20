@@ -167,6 +167,9 @@ public class UtenteService {
                     //Aggiungi alla lista gli id dei dipendenti che hanno il contratto scaduto
                     if (contattoPerUtente.get().getDataFine().isBefore(LocalDate.now())){
                         utentiConContrattoScaduto.add(u.getIdUtente());
+                        Contratto contrattoDaDisabilitara = contattoPerUtente.get();
+                        contrattoDaDisabilitara.setScaduto(true);
+                        contrattoRepository.save(contrattoDaDisabilitara);
                     }
                 }
             }
