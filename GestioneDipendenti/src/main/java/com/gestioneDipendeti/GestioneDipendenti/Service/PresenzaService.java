@@ -69,7 +69,7 @@ public class PresenzaService {
         return presenzaRepository.save(presenza);
     }
 
-    public void addPresenzaConFerie(Presenza presenza, Principal principal) throws IllegalArgumentException, ArithmeticException{
+    public void addPresenzaConFerie(Presenza presenza, Principal principal) throws IllegalArgumentException, ArithmeticException {
         Utente utente = loginService.recuperoUtente(principal);
         Dipendente dipendente = utente.getDipendente();
         LocalDate inizioFerie = presenza.getDataInizioFerie();

@@ -54,6 +54,14 @@ public class PresenzaController {
 
         Dipendente dipendente = loginService.recuperoDipendente(principal);
 
+        //Verifico se il dipendente ha un contratto
+        Optional<Contratto> contrattoPerDipendente = contrattoRepository.findBydipendente(dipendente);
+        if (contrattoPerDipendente.isEmpty()){
+            redirectAttributes.addFlashAttribute("presenzaError","L'utente non ha un contratto," +
+                    " non è possibile procedere con la creazione della presenza");
+            return "redirect:/";
+        }
+
         //Eventuale aggiunta di ferie
         Presenza presenzaGiornaliera = presenzaRepository.findByPresenza(dipendente);
         if (presenza.getDataInizioFerie() != null && presenza.getDataFineFerie() != null){
