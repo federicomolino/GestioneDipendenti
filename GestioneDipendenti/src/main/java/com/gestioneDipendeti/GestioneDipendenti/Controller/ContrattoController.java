@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -111,5 +112,40 @@ public class ContrattoController {
                     " del contratto");
             return "redirect:/utente/utente-contratto/contratto/edit/" + utente.getIdUtente();
         }
+    }
+
+    @GetMapping("/contratti-scaduti")
+    public String contrattiScaduti(Model model){
+        List<Contratto> contrattiScaduti = contrattoRepository.findByIsScadutoTrue();
+        for (Contratto c : contrattiScaduti){
+            Dipendente d = c.getDipendente();
+            Utente u = d.getUtente();
+            model.addAttribute("username",u.getUsername());
+            model.addAttribute("listUtentiContrattoScaduto",contrattiScaduti);
+            model.addAttribute("formContratto",c);
+        }
+        return "Utente/ContrattiScaduti";
+    }
+
+    @PostMapping("/contratti-scaduti/aggiorna/{idContratto}")
+    public String contrattiScadutiAggiorna(@ModelAttribute("formContratto") Contratto contratto, RedirectAttributes redirectAttributes){
+        try {
+            contrattoService.aggiornaContratto(contratto);
+            redirectAttributes.addFlashAttribute("successMessage","Contratto aggiornato " +
+                    "correttamene");
+            return "redirect:/utente/utente-contratto/contratti-scaduti";
+        }catch (IllegalArgumentException e){
+            redirectAttributes.addFlashAttribute("errorMessage","Errore durante l'aggornamento " +
+                    "del contratto, verifica i dati passati");
+            return "redirect:/utente/utente-contratto/contratti-scaduti";
+        }
+    }
+
+    @PostMapping("/contratti-scaduti/elimina/{idContratto}")
+    public String eliminaContrattoScaduto(@PathVariable("idContratto") Long idContratto, RedirectAttributes redirectAttributes){
+        contrattoService.eliminaContratto(idContratto);
+        redirectAttributes.addFlashAttribute("successMessage","Contratto eliminato " +
+                "correttamene");
+        return "redirect:/utente/utente-contratto/contratti-scaduti";
     }
 }

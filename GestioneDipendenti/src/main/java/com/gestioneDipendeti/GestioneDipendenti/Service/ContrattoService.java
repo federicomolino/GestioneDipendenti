@@ -87,4 +87,23 @@ public class ContrattoService {
         contrattoDipendente.setOreFerieUtilizzate(contratto.getOreFerieUtilizzate());
         return contrattoRepository.save(contrattoDipendente);
     }
+
+    public Contratto aggiornaContratto(Contratto contratto) throws IllegalArgumentException{
+        if (contratto.getDataFine().isBefore(contratto.getDataInzio())){
+            throw new IllegalArgumentException("Data fine superiore a quella di inizio");
+        }
+        if (contratto.getDataFine().isEqual(LocalDate.now()) || contratto.getDataFine().isBefore(LocalDate.now())){
+            throw new IllegalArgumentException("Contratto con scadenza già superata o scadenza oggi");
+        }
+        Contratto contrattoScaduto = contrattoRepository.findById(contratto.getIdContratto()).get();
+        contrattoScaduto.setDataInzio(contratto.getDataInzio());
+        contrattoScaduto.setDataFine(contratto.getDataFine());
+        contrattoScaduto.setScaduto(false);
+        return contrattoRepository.save(contrattoScaduto);
+    }
+
+    public void eliminaContratto(long idContratto){
+        contrattoRepository.deleteById(idContratto);
+    }
+
 }

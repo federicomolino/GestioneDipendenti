@@ -20,4 +20,6 @@ public interface ContrattoRepository extends JpaRepository<Contratto,Long> {
         WHERE c.isScaduto = true
     """)
     List<Long> findIdUtenteWithContrattoScaduto();
+
+    List<Contratto> findByIsScadutoTrue();
 }
