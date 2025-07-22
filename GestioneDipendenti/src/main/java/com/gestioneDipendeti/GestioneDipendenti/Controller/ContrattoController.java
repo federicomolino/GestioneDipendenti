@@ -117,6 +117,7 @@ public class ContrattoController {
     @GetMapping("/contratti-scaduti")
     public String contrattiScaduti(Model model){
         List<Contratto> contrattiScaduti = contrattoRepository.findByIsScadutoTrue();
+
         for (Contratto c : contrattiScaduti){
             Dipendente d = c.getDipendente();
             Utente u = d.getUtente();
