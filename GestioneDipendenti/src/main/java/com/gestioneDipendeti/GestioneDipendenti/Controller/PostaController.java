@@ -1,9 +1,12 @@
 package com.gestioneDipendeti.GestioneDipendenti.Controller;
 
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Assistenza;
+import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Presenza;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Utente;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.AssistenzaRepository;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.DipendenteRepository;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.PresenzaRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.UtenteRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
 import com.gestioneDipendeti.GestioneDipendenti.Service.PostaService;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +42,12 @@ public class PostaController {
 
     @Autowired
     private PresenzaService presenzaService;
+
+    @Autowired
+    private PresenzaRepository presenzaRepository;
+
+    @Autowired
+    private DipendenteRepository dipendenteRepository;
 
     @GetMapping()
     public String showPostaPage(Model model, Principal principal){
@@ -145,5 +155,30 @@ public class PostaController {
         idRichiesteAssistenza.add(idAssistenza);
         postaService.leggiRichiesteAssistenza(idRichiesteAssistenza);
         return "redirect:/posta/richiesta/" + idAssistenza;
+    }
+
+    @GetMapping("/cerca-data/{idAssistenza}")
+    public String showCercaPerData(@PathVariable("idAssistenza") long idAssistenza, Model model){
+        List<Utente> listUtente = utenteRepository.findAll();
+        model.addAttribute("utenteList", listUtente);
+        return "redirect:/posta/richiesta/" + idAssistenza;
+    }
+
+    @PostMapping("/cerca-data/{idAssistenza}")
+    public String cercaData(@PathVariable("idAssistenza") long idAssistenza,
+                            @RequestParam("data") String data,
+                            @RequestParam("username") String username, RedirectAttributes redirectAttributes){
+        Utente utente = utenteRepository.findByUsername(username).get();
+        Dipendente dipendente = dipendenteRepository.findByUtenteId(utente.getIdUtente());
+        LocalDate dataPassata = LocalDate.parse(data);
+        List<Presenza> presenzaPerGiorno = presenzaRepository.findByDataAndDipendente(dataPassata,dipendente);
+        try{
+            postaService.isGiornataStraordinario(presenzaPerGiorno);
+            redirectAttributes.addFlashAttribute("successMessage","Giornata accetta");
+            return "redirect:/posta/richiesta/" + idAssistenza;
+        }catch (IllegalArgumentException ex){
+            redirectAttributes.addFlashAttribute("errorMessage","Data inserita non valida");
+            return "redirect:/posta/richiesta/" + idAssistenza;
+        }
     }
 }

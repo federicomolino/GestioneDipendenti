@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface PresenzaRepository extends JpaRepository<Presenza, Long> {
 
     @Query("SELECT p FROM Presenza p WHERE p.data = CURRENT_DATE AND p.dipendente = :dipendente")
-    Presenza findByPresenza(@Param("dipendente")Dipendente dipendente);
+    List<Presenza> findByPresenza(@Param("dipendente")Dipendente dipendente);
 
     @Query(value = "SELECT p FROM Presenza p WHERE p.dipendente = :dipendente " +
             "and DATE_FORMAT(p.`data`, '%Y-%m') = DATE_FORMAT(CURRENT_DATE(), '%Y-%m')" +
@@ -30,7 +30,7 @@ public interface PresenzaRepository extends JpaRepository<Presenza, Long> {
             "and p.dipendente = :dipendente order by p.data DESC")
     List<Presenza> findBySearchData(@Param("dipendente") Dipendente dipendente, @Param("data") String data);
 
-    Optional<Presenza> findByDataAndDipendente(LocalDate data, Dipendente dipendente);
+    List<Presenza> findByDataAndDipendente(LocalDate data, Dipendente dipendente);
 
     @Query("select p from Presenza p where p.data = :data")
     Optional<Presenza> findByData(@Param("data") LocalDate data);

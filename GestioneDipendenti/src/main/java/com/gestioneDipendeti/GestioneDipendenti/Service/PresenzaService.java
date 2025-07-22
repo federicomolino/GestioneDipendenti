@@ -47,15 +47,29 @@ public class PresenzaService {
         }
 
         //Presenza già presente a DB
-        Optional<Presenza> presenzaData = presenzaRepository.findByDataAndDipendente(presenza.getData(), dipendente);
-        if (presenzaData.isPresent()){
-
-            int OraEntrataPresenza = presenzaData.get().getOraEntrata().getHour();
-            int oraUscitaPresenza = presenzaData.get().getOraUscita().getHour();
-            int oreTotaliSvolte = oraUscitaPresenza - OraEntrataPresenza;
-            if (oreTotaliSvolte > 10){
-                log.warning("Riga già presente nel db");
-                throw new IllegalArgumentException("Riga già presente nel db");
+        List<Presenza> presenzaData = presenzaRepository.findByDataAndDipendente(presenza.getData(), dipendente);
+        if (!presenzaData.isEmpty()){
+            int oreTotaliSvolte = 0;
+            List<Integer> giornataStrardinario = new ArrayList<>();
+            for (Presenza p : presenzaData){
+                int OraEntrataPresenza = p.getOraEntrata().getHour();
+                int oraUscitaPresenza = p.getOraUscita().getHour();
+                int oreFattePerGiornata = oraUscitaPresenza - OraEntrataPresenza;
+                oreTotaliSvolte += oreFattePerGiornata;
+                if (p.isGiornataStraordinario()){
+                    giornataStrardinario.add(1);
+                }else {
+                    giornataStrardinario.add(0);
+                }
+            }
+            if (oreTotaliSvolte >= 8){
+                //Se la giornata ha il permesso dello straodinario faccio aggiungere più ore
+                for (Integer straordinario : giornataStrardinario){
+                    if (straordinario.equals("0")){
+                        log.warning("Ore svolte maggiori di 8");
+                        throw new IllegalArgumentException("Ore svolte maggiori di 8");
+                    }
+                }
             }
         }
 

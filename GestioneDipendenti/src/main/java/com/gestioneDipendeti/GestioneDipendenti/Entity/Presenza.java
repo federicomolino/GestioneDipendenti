@@ -42,6 +42,17 @@ public class Presenza {
 
     private boolean chiudiGiornata;
 
+    @Column(name = "giornata_straordinario", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean giornataStraordinario;
+
+    public boolean isGiornataStraordinario() {
+        return giornataStraordinario;
+    }
+
+    public void setGiornataStraordinario(boolean giornataStraordinario) {
+        this.giornataStraordinario = giornataStraordinario;
+    }
+
     public boolean isChiudiGiornata() {
         return chiudiGiornata;
     }

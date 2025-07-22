@@ -60,9 +60,7 @@ public class PresenzaController {
                     " non è possibile procedere con la creazione della presenza");
             return "redirect:/";
         }
-
-        //Eventuale aggiunta di ferie
-        Presenza presenzaGiornaliera = presenzaRepository.findByPresenza(dipendente);
+        
         if (presenza.getDataInizioFerie() != null && presenza.getDataFineFerie() != null){
             try{
                 presenzaService.addPresenzaConFerie(presenza,principal);
