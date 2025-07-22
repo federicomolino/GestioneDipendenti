@@ -30,7 +30,7 @@ public interface PresenzaRepository extends JpaRepository<Presenza, Long> {
             "and p.dipendente = :dipendente order by p.data DESC")
     List<Presenza> findBySearchData(@Param("dipendente") Dipendente dipendente, @Param("data") String data);
 
-    boolean existsByDataAndDipendente(LocalDate data, Dipendente dipendente);
+    Optional<Presenza> findByDataAndDipendente(LocalDate data, Dipendente dipendente);
 
     @Query("select p from Presenza p where p.data = :data")
     Optional<Presenza> findByData(@Param("data") LocalDate data);

@@ -3,7 +3,6 @@ package com.gestioneDipendeti.GestioneDipendenti.Controller;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Presenza;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.StatoPresenza;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.PresenzaRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
@@ -79,12 +78,6 @@ public class PresenzaController {
             }
         }
 
-        if (presenzaGiornaliera != null &&
-                !presenzaGiornaliera.getStato().equals(StatoPresenza.PERMESSO)){
-            redirectAttributes.addFlashAttribute("presenzaError","Timbratura già effettuata");
-            return "redirect:/";
-        }
-
         if (!presenza.getData().equals(LocalDate.now())){
             redirectAttributes.addFlashAttribute("dataError","Data inserita non valida");
             return "redirect:/";
@@ -114,6 +107,10 @@ public class PresenzaController {
             return "redirect:/";
         }catch (DateTimeException ex){
             redirectAttributes.addFlashAttribute("presenzaError","Non è possibile inserire presenze nel weekend.");
+            return "redirect:/";
+        }catch (IllegalArgumentException ex){
+            redirectAttributes.addFlashAttribute("presenzaError","Superate le 8 ore chiedi stradinario per poter" +
+                    " inserire le restanti ore");
             return "redirect:/";
         }
         return "redirect:/";

@@ -47,10 +47,16 @@ public class PresenzaService {
         }
 
         //Presenza già presente a DB
-        boolean presenzaData = presenzaRepository.existsByDataAndDipendente(presenza.getData(), dipendente);
-        if (presenzaData){
-            log.warning("Riga già presente nel db");
-            throw new IllegalArgumentException("Riga già presente nel db");
+        Optional<Presenza> presenzaData = presenzaRepository.findByDataAndDipendente(presenza.getData(), dipendente);
+        if (presenzaData.isPresent()){
+
+            int OraEntrataPresenza = presenzaData.get().getOraEntrata().getHour();
+            int oraUscitaPresenza = presenzaData.get().getOraUscita().getHour();
+            int oreTotaliSvolte = oraUscitaPresenza - OraEntrataPresenza;
+            if (oreTotaliSvolte > 10){
+                log.warning("Riga già presente nel db");
+                throw new IllegalArgumentException("Riga già presente nel db");
+            }
         }
 
         if (presenza.getStato().equals(StatoPresenza.PERMESSO)){
@@ -81,13 +87,6 @@ public class PresenzaService {
         }
 
         for (LocalDate i = inizioFerie; !i.isAfter(fineFerie); i = i.plusDays(1)) {
-
-            //Verifico se la data è già presente nel db per l'utente
-            boolean presenzaData = presenzaRepository.existsByDataAndDipendente(i, dipendente);
-            if (presenzaData){
-                log.warning("Riga già presente nel db");
-                throw new IllegalArgumentException("Riga già presente nel db");
-            }
             //Verifico se esiste un contratto per il dipendente
             Optional<Contratto> contrattoDipendente = contrattoRepository.findBydipendente(dipendente);
             if (contrattoDipendente.isPresent()){
@@ -211,7 +210,7 @@ public class PresenzaService {
             LocalTime oraEntrata = presenzePerData.getOraEntrata();
             LocalTime oraUscita = presenzePerData.getOraUscita();
             Duration durataGionarta = Duration.between(oraEntrata,oraUscita);
-            durataTotaleGiornata = durataGionarta.toHours();
+            durataTotaleGiornata += durataGionarta.toHours();
         }
         if (durataTotaleGiornata >= 8){
             for (int i = 0; i<presenzaList.size(); i ++){
