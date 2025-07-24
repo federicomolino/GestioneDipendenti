@@ -44,6 +44,9 @@ public class Dipendente {
     @JsonManagedReference
     private Utente utente;
 
+    @OneToOne(mappedBy = "dipendente")
+    private MacchinaAziendale macchinaAziendale;
+
     public Utente getUtente() {
         return utente;
     }

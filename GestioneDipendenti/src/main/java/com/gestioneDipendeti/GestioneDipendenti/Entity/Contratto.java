@@ -37,6 +37,18 @@ public class Contratto {
     @JsonBackReference
     private Dipendente dipendente;
 
+    @Column(name = "livello_contratto")
+    @Enumerated(EnumType.STRING)
+    private LivelliContrattiCommercio livelliContrattiCommercio;
+
+    public LivelliContrattiCommercio getLivelliContrattiCommercio() {
+        return livelliContrattiCommercio;
+    }
+
+    public void setLivelliContrattiCommercio(LivelliContrattiCommercio livelliContrattiCommercio) {
+        this.livelliContrattiCommercio = livelliContrattiCommercio;
+    }
+
     @Column(name = "contratto_scaduto")
     private boolean isScaduto;
 
