@@ -2,15 +2,13 @@ package com.gestioneDipendeti.GestioneDipendenti.Controller;
 
 import com.gestioneDipendeti.GestioneDipendenti.Entity.MacchinaAziendale;
 import com.gestioneDipendeti.GestioneDipendenti.Exception.AutoNonDisponibileException;
+import com.gestioneDipendeti.GestioneDipendenti.Exception.AutoPerDipendeteExist;
 import com.gestioneDipendeti.GestioneDipendenti.Exception.RuoloContrattoNonValido;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.AutoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.AutoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -33,6 +31,7 @@ public class RichiestaAutoController {
     public String showRichiestaAuto(Model model){
         List<MacchinaAziendale> auto = autoRepository.findAll();
         model.addAttribute("listAuto",auto);
+        model.addAttribute("formAuto", new MacchinaAziendale());
         return "Auto/RichiestaAuto";
     }
 
@@ -58,11 +57,18 @@ public class RichiestaAutoController {
         }catch (RuoloContrattoNonValido ex){
             redirectAttributes.addFlashAttribute("errorMessage",username + " non hai diritto all'auto");
             return "redirect:/richiesta-macchina";
+        }catch (AutoPerDipendeteExist ex){
+            redirectAttributes.addFlashAttribute("errorMessage",username + " ha già all'auto");
+            return "redirect:/richiesta-macchina";
         }
     }
 
     @PostMapping("/richiestaIdAuto")
     public String richiestaIdAutoController(@RequestParam("idAuto") String idAuto, RedirectAttributes redirectAttributes){
+        if (idAuto.isEmpty()){
+            redirectAttributes.addFlashAttribute("errorMessage","idAuto non valido");
+            return "redirect:/richiesta-macchina";
+        }
         long idAutoInserito = Long.parseLong(idAuto);
         try{
             autoService.richiestaIdAutoService(idAutoInserito);
@@ -73,6 +79,31 @@ public class RichiestaAutoController {
             return "redirect:/richiesta-macchina";
         }catch (IllegalArgumentException ex){
             redirectAttributes.addFlashAttribute("errorMessage","idAuto non valido");
+            return "redirect:/richiesta-macchina";
+        }
+    }
+
+    @PostMapping("/aggiungiAuto")
+    public String aggiungiAuto(@ModelAttribute("formAuto") MacchinaAziendale formAuto, RedirectAttributes redirectAttributes){
+        try {
+            autoService.aggiungiAuto(formAuto);
+            redirectAttributes.addFlashAttribute("successMessage","Auto Aggiunta Correttamente");
+            return "redirect:/richiesta-macchina";
+        }catch (IllegalArgumentException ex){
+            redirectAttributes.addFlashAttribute("errorMessage","Errore nell'inserimento dei dati");
+            return "redirect:/richiesta-macchina";
+        }
+    }
+
+    @PostMapping("/eliminaAuto/{idAuto}")
+    public String eliminaAuto(@PathVariable("idAuto")long idAuto, RedirectAttributes redirectAttributes){
+        try {
+            autoService.cancellaMacchina(idAuto);
+            redirectAttributes.addFlashAttribute("successMessage","Auto Cancellata Correttamente");
+            return "redirect:/richiesta-macchina";
+        }catch (AutoNonDisponibileException ex){
+            redirectAttributes.addFlashAttribute("errorMessage","L'auto è assegnata ad un" +
+                    " dipendente, impossibile procedere con la cancellazione");
             return "redirect:/richiesta-macchina";
         }
     }
