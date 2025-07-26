@@ -4,7 +4,7 @@ function aggiungiEliminaAuto(){
     const aggiungiAutoDiv = document.getElementById("aggiungiAutoDiv");
     const eliminaAutoDiv = document.getElementById("eliminaAutoDiv");
 
-    if(inputRadio1.checked){
+    if(inputRadio1 && inputRadio1.checked){
         aggiungiAutoDiv.classList.remove("d-none");
         aggiungiAutoDiv.classList.add("d-block");
 
@@ -12,7 +12,7 @@ function aggiungiEliminaAuto(){
         eliminaAutoDiv.classList.remove("d-block");
     }
 
-    if(inputRadio2.checked){
+    if(inputRadio2 && inputRadio2.checked){
         eliminaAutoDiv.classList.remove("d-none");
         eliminaAutoDiv.classList.add("d-block");
 
@@ -23,40 +23,41 @@ function aggiungiEliminaAuto(){
 
 function verificaCampiRichiestaAuto(){
     const richiediAutoButton = document.getElementById("richiediAuto");
-    const idAutoInput = document.getElementById("idAutoInput").value.trim();
+    const idAutoInput = document.getElementById("idAutoInput");
 
-    if(idAutoInput === "" || idAutoInput === null){
-        richiediAutoButton.disabled = true;
-    }else{
-        richiediAutoButton.disabled = false;
-    }
+    if(!richiediAutoButton || !idAutoInput) return;
 
-    //Legge il valore successMessage da data-attribute
+    const idAutoVal = idAutoInput.value.trim();
+
+    richiediAutoButton.disabled = (idAutoVal === "");
+
+    // Controllo se il form richiesta auto è presente (quindi se utente è stato verificato)
     const formRichiesta = document.getElementById("formRichiestaAuto");
 
-    console.warn("prima della condizione");
     if (formRichiesta) {
-        // Disabilita l'input username
+        // Disabilita input username e bottone ricerca
         const inputUsername = document.getElementById("usernameUtenteRichiesta");
-        const ricercaUtenteButton = document.getElementById("ricercaUtenteButton")
-        if (inputUsername){
-            inputUsername.disabled = true;
-            ricercaUtenteButton.disabled = true;
-        }
+        const ricercaUtenteButton = document.getElementById("ricercaUtenteButton");
+        if (inputUsername) inputUsername.disabled = true;
+        if (ricercaUtenteButton) ricercaUtenteButton.disabled = true;
 
-        // Mostra il messaggio
+        // Mostra messaggio utente inserito
         const messaggio = document.getElementById("messageUtenteInserito");
         if (messaggio) messaggio.classList.remove("d-none");
     }
-
-    console.warn("dopo");
 }
 
 document.addEventListener("DOMContentLoaded", function () {
     aggiungiEliminaAuto();
-    verificaCampiRichiestaAuto();
 
-    document.getElementById("radioDefault1").addEventListener("change", aggiungiEliminaAuto);
-    document.getElementById("radioDefault2").addEventListener("change", aggiungiEliminaAuto);
-    document.getElementById("idAutoInput").addEventListener("change", verificaCampiRichiestaAuto);
+    const radio1 = document.getElementById("radioDefault1");
+    const radio2 = document.getElementById("radioDefault2");
+    if (radio1) radio1.addEventListener("change", aggiungiEliminaAuto);
+    if (radio2) radio2.addEventListener("change", aggiungiEliminaAuto);
+
+    const idAutoInput = document.getElementById("idAutoInput");
+    if (idAutoInput) {
+        idAutoInput.addEventListener("input", verificaCampiRichiestaAuto);
+        verificaCampiRichiestaAuto(); // verifica stato all'inizio
+    }
 });
