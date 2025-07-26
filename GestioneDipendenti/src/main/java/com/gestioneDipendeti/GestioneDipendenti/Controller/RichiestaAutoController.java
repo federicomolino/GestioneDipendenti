@@ -1,6 +1,8 @@
 package com.gestioneDipendeti.GestioneDipendenti.Controller;
 
 import com.gestioneDipendeti.GestioneDipendenti.Entity.MacchinaAziendale;
+import com.gestioneDipendeti.GestioneDipendenti.Exception.AutoNonDisponibileException;
+import com.gestioneDipendeti.GestioneDipendenti.Exception.RuoloContrattoNonValido;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.AutoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.AutoService;
 import org.springframework.stereotype.Controller;
@@ -52,6 +54,25 @@ public class RichiestaAutoController {
 
         }catch (Error e){
             redirectAttributes.addFlashAttribute("errorMessage","Contratto scaduto");
+            return "redirect:/richiesta-macchina";
+        }catch (RuoloContrattoNonValido ex){
+            redirectAttributes.addFlashAttribute("errorMessage",username + " non hai diritto all'auto");
+            return "redirect:/richiesta-macchina";
+        }
+    }
+
+    @PostMapping("/richiestaIdAuto")
+    public String richiestaIdAutoController(@RequestParam("idAuto") String idAuto, RedirectAttributes redirectAttributes){
+        long idAutoInserito = Long.parseLong(idAuto);
+        try{
+            autoService.richiestaIdAutoService(idAutoInserito);
+            redirectAttributes.addFlashAttribute("successMessage","Puoi andare a ritirare l'auto");
+            return "redirect:/richiesta-macchina";
+        }catch (AutoNonDisponibileException ex){
+            redirectAttributes.addFlashAttribute("errorMessage","L'auto non è disponibile");
+            return "redirect:/richiesta-macchina";
+        }catch (IllegalArgumentException ex){
+            redirectAttributes.addFlashAttribute("errorMessage","idAuto non valido");
             return "redirect:/richiesta-macchina";
         }
     }
