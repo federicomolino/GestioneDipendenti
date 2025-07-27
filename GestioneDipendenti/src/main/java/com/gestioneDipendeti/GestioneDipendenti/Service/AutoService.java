@@ -44,7 +44,7 @@ public class AutoService {
             Dipendente dipendente = dipendenteRepository.findByUtenteId(utente.get().getIdUtente());
             //Verifico se il dipendente ha già una macchina
             if (dipendente != null){
-                if (autoRepository.findById(dipendente.getIdDipendente()).isEmpty()){
+                if (autoRepository.findByDipendente_IdDipendente(dipendente.getIdDipendente()).isEmpty()){
                     Optional<Contratto> contratto = contrattoRepository.findBydipendente(dipendente);
                     if (contratto.isPresent()){
                         if (!contratto.get().isScaduto()){
@@ -116,5 +116,18 @@ public class AutoService {
             throw new AutoNonDisponibileException("Auto assegnata");
         }
         autoRepository.delete(auto);
+    }
+
+    public void restituisciAuto(String numeroKm, Long idAuto) throws IllegalArgumentException{
+        MacchinaAziendale auto = autoRepository.findById(idAuto).get();
+        int numeroKmParse = Integer.parseInt(numeroKm);
+        if (auto.getNumeroKm() > numeroKmParse){
+            logAutoService.warning("Numero KM passati inferiori ai precedenti");
+            throw new IllegalArgumentException("Numero KM inferiori ai precedenti");
+        }
+        auto.setDipendente(null);
+        auto.setNumeroKm(numeroKmParse);
+        auto.setAutoDisponibile(true);
+        autoRepository.save(auto);
     }
 }

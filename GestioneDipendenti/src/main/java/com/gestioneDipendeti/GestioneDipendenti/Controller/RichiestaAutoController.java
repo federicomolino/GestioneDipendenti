@@ -107,4 +107,19 @@ public class RichiestaAutoController {
             return "redirect:/richiesta-macchina";
         }
     }
+
+    @PostMapping("restituisciAuto/{idAuto}")
+    public String restituisciAuto(@PathVariable("idAuto") long idAuto,
+                                  @RequestParam("numeroKm") String numerokm,
+                                  RedirectAttributes redirectAttributes){
+        try {
+            autoService.restituisciAuto(numerokm,idAuto);
+            redirectAttributes.addFlashAttribute("presenzaSuccess","Auto Restituita Correttamente");
+            return "redirect:/";
+        }catch (IllegalArgumentException ex){
+            redirectAttributes.addFlashAttribute("messageError","Numero km inseriti non " +
+                    "validi");
+            return "redirect:/";
+        }
+    }
 }

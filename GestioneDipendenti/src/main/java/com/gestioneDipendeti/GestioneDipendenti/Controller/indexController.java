@@ -1,9 +1,6 @@
 package com.gestioneDipendeti.GestioneDipendenti.Controller;
 
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Presenza;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Utente;
+import com.gestioneDipendeti.GestioneDipendenti.Entity.*;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.*;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
 import com.gestioneDipendeti.GestioneDipendenti.Service.UtenteService;
@@ -43,12 +40,21 @@ public class indexController {
     @Autowired
     private UtenteService utenteService;
 
+    @Autowired
+    private AutoRepository autoRepository;
+
     @GetMapping()
     public String showUtente(Model model, Principal principal){
         //Recupero dipendente
         Utente user = loginService.recuperoUtente(principal);
         Long idUtente = user.getIdUtente();
         Dipendente dipendente = dipendenteRepository.findByUtenteId(idUtente);
+
+        //Verifico se il dipendente ha un'auto
+        Optional<MacchinaAziendale> auto = autoRepository.findByDipendente_IdDipendente(dipendente.getIdDipendente());
+        if (auto.isPresent()){
+            model.addAttribute("auto",auto.get());
+        }
 
         model.addAttribute("formAddPresenza", new Presenza());
         model.addAttribute("Dipendete", dipendente);
