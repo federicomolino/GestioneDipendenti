@@ -45,7 +45,9 @@ public class ContrattoController {
 
     @PostMapping("/contratto/{idUtente}")
     public String addContrattoPerUtente(@ModelAttribute("formNewContratto") @Valid Contratto contratto,
-                                        @PathVariable("idUtente") Long idUtente, BindingResult bindingResult,
+                                        @PathVariable("idUtente") Long idUtente,
+                                        @RequestParam("livelliContrattiCommercio") String livelloContratto,
+                                        BindingResult bindingResult,
                                         RedirectAttributes redirectAttributes, Model model){
         Utente utente = utenteRepository.findById(idUtente).get();
         if (bindingResult.hasErrors()){

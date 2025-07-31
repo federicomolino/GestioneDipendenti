@@ -21,6 +21,7 @@ public class ContrattoService {
             contratto.setDataInzio(LocalDate.now());
             contratto.setDataFine(dataFine);
             contratto.setDipendente(dipendente);
+            contratto.setLivelliContrattiCommercio(contratto.getLivelliContrattiCommercio());
             return contrattoRepository.save(contratto);
         }
         if (contratto.getDataInzio().isAfter(contratto.getDataFine())){
@@ -41,6 +42,7 @@ public class ContrattoService {
         }
 
         contratto.setDipendente(dipendente);
+        contratto.setLivelliContrattiCommercio(contratto.getLivelliContrattiCommercio());
         return contrattoRepository.save(contratto);
     }
 
@@ -58,6 +60,7 @@ public class ContrattoService {
             contrattoDipendente.setStipendioLordo(contratto.getStipendioLordo());
             contrattoDipendente.setOreFerieTotali(contratto.getOreFerieTotali());
             contrattoDipendente.setOreFerieUtilizzate(contratto.getOreFerieUtilizzate());
+            contrattoDipendente.setLivelliContrattiCommercio(contratto.getLivelliContrattiCommercio());
             return contrattoRepository.save(contrattoDipendente);
         }
         if (contratto.getDataInzio().isAfter(contratto.getDataFine())){
@@ -85,6 +88,7 @@ public class ContrattoService {
         contrattoDipendente.setStipendioLordo(contratto.getStipendioLordo());
         contrattoDipendente.setOreFerieTotali(contratto.getOreFerieTotali());
         contrattoDipendente.setOreFerieUtilizzate(contratto.getOreFerieUtilizzate());
+        contrattoDipendente.setLivelliContrattiCommercio(contratto.getLivelliContrattiCommercio());
         return contrattoRepository.save(contrattoDipendente);
     }
 

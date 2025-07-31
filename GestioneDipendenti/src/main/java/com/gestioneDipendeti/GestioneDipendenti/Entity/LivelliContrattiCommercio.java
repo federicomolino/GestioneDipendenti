@@ -10,3 +10,6 @@ public enum LivelliContrattiCommercio {
     SESTO_LIVELLO,
     SETTIMO_LIVELLO
 }
+
+
+

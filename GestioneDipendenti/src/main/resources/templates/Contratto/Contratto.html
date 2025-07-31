@@ -53,6 +53,24 @@
               </div>
 
               <div class="row mb-3">
+                <div class="d-flex">
+                  <labal class="fw-bold col-6">Livello Contratto<span class="text-danger">*</span></labal>
+                  <select class="form-select form-select-sm col-" aria-label="Small select example" required
+                          th:field="*{livelliContrattiCommercio}" id="livelloContratto">
+                    <option selected disabled value="">Scegli livello</option>
+                    <option value="QUADRI">QUADRI</option>
+                    <option value="PRIMO_LIVELLO">PRIMO LIVELLO</option>
+                    <option value="SECONDO_LIVELLO">SECONDO LIVELLO</option>
+                    <option value="TERZO_LIVELLO">TERZO LIVELLO</option>
+                    <option value="QUARTO_LIVELLO">QUARTO LIVELLO</option>
+                    <option value="QUINTO_LIVELLO">QUINTO LIVELLO</option>
+                    <option value="SESTO_LIVELLO">SESTO LIVELLO</option>
+                    <option value="SETTIMO_LIVELLO">SETTIMO LIVELLO</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
                 <label class="col-6 fw-bold mt-2">Ore Settimanali<span class="text-danger"> *</span></label>
                 <div class="col-6">
                   <input type="number" id="oreSettimanali" class="form-control" aria-describedby="oreSettimanali"
@@ -106,7 +124,7 @@
             </div>
 
             <div class="mb-3 me-3 text-end">
-              <button type="submit" class="btn btn-success">Crea Contratto</button>
+              <button type="submit" class="btn btn-sm btn-success">Crea Contratto</button>
             </div>
           </form>
         </div>
