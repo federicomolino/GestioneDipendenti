@@ -2,6 +2,7 @@ package com.gestioneDipendeti.GestioneDipendenti.Repository;
 
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Presenza;
+import com.gestioneDipendeti.GestioneDipendenti.Entity.StatoPresenza;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,6 +35,11 @@ public interface PresenzaRepository extends JpaRepository<Presenza, Long> {
 
     @Query("select p from Presenza p where p.data = :data")
     Optional<Presenza> findByData(@Param("data") LocalDate data);
+
+    @Query("select p from Presenza p where p.data = :data and p.stato = :stato and p.dipendente = :dipendente")
+    Optional<Presenza> findByDataAndStato(@Param("data") LocalDate data,
+                                  @Param("stato") StatoPresenza stato,
+                                  @Param("dipendente") Dipendente dipendente);
 
     @Query("select p from Presenza p where p.data = :data")
     List<Presenza> findByDataList(@Param("data") LocalDate data);

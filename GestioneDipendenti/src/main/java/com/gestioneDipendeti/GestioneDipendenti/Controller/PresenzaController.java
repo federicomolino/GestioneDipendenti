@@ -3,6 +3,9 @@ package com.gestioneDipendeti.GestioneDipendenti.Controller;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Presenza;
+import com.gestioneDipendeti.GestioneDipendenti.Exception.PresenzaErrorOreGiornataSuperiori;
+import com.gestioneDipendeti.GestioneDipendenti.Exception.PresenzaErrorOreRimaste;
+import com.gestioneDipendeti.GestioneDipendenti.Exception.PresenzaOreInseriteNonValide;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.PresenzaRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
@@ -162,6 +165,7 @@ public class PresenzaController {
             return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
         }
 
+
         //modifica la presenza
         try {
             presenzaService.editPresenza(formEditDay, principal);
@@ -169,6 +173,17 @@ public class PresenzaController {
             return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
         }catch (DataFormatException ex){
             redirectAttributes.addFlashAttribute("errorMessage", "Orari del permesso inseriti errati");
+            return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
+        }catch (PresenzaErrorOreRimaste ex){
+            redirectAttributes.addFlashAttribute("errorMessage", "Ore rimaste di ferie non " +
+                    "sufficenti");
+            return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
+        }catch (PresenzaOreInseriteNonValide ex){
+            redirectAttributes.addFlashAttribute("errorMessage", "Ore inserite non valide");
+            return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
+        }catch (PresenzaErrorOreGiornataSuperiori ex){
+            redirectAttributes.addFlashAttribute("errorMessage", "Per potere procedere con la modifica" +
+                    " richiedere straordinario");
             return "redirect:/presenza/calendar/" + formEditDay.getIdPresenza();
         }
     }

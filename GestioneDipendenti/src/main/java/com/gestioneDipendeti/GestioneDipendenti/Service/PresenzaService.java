@@ -1,6 +1,9 @@
 package com.gestioneDipendeti.GestioneDipendenti.Service;
 
 import com.gestioneDipendeti.GestioneDipendenti.Entity.*;
+import com.gestioneDipendeti.GestioneDipendenti.Exception.PresenzaErrorOreGiornataSuperiori;
+import com.gestioneDipendeti.GestioneDipendenti.Exception.PresenzaErrorOreRimaste;
+import com.gestioneDipendeti.GestioneDipendenti.Exception.PresenzaOreInseriteNonValide;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.PresenzaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,46 +157,220 @@ public class PresenzaService {
         }
     }
 
-    public Presenza editPresenza(Presenza presenza, Principal principal) throws DataFormatException {
+    public Presenza editPresenza(Presenza presenza, Principal principal) throws DataFormatException, PresenzaErrorOreRimaste,
+            PresenzaOreInseriteNonValide, PresenzaErrorOreGiornataSuperiori{
         Presenza presenzaEsistente = presenzaRepository.findById(presenza.getIdPresenza()).get();
-        if (presenza.getStato().equals(StatoPresenza.PERMESSO)){
-            Utente utente = loginService.recuperoUtente(principal);
-            Dipendente dipendente = utente.getDipendente();
+        Utente utente = loginService.recuperoUtente(principal);
+        Dipendente dipendente = utente.getDipendente();
 
-            LocalTime oraUscita = presenzaEsistente.getOraUscita();
-            LocalTime oraEntrata = presenzaEsistente.getOraEntrata();
-            LocalTime oraUscitaInput = presenza.getOraUscita();
-            LocalTime oraEntrataInput = presenza.getOraEntrata();
-
-            if (oraUscitaInput.isAfter(oraEntrataInput)){
-                log.warning("Ora uscita più grande dell'oraEntrata");
-                throw new DataFormatException("Ora uscita più grande dell'oraEntrata");
+        if (presenza.getStato().equals(StatoPresenza.FERIE)){
+            try{
+                return editConFerie(presenza,presenzaEsistente, dipendente);
+            }catch (IllegalArgumentException ex){
+                throw new PresenzaErrorOreRimaste("Ferie non accettate");
             }
-
-            //Durante salvata
-            Duration differenzaPresenteSalvata = Duration.between(oraUscita,oraEntrata);
-            float oreTotaliPermessoConvertitoInFloat = differenzaPresenteSalvata.toMinutes() / 60.0f;
-            //Durante input
-            Duration differenzaPresenteInput = Duration.between(oraUscitaInput,oraEntrataInput);
-            float oreTotaliPermessoInputConvertitoInFloat = differenzaPresenteInput.toMinutes() / 60.0f;
-            //Mi recupero il contratto
-            Contratto contratto = contrattoRepository.findBydipendente(dipendente).get();
-            if (oreTotaliPermessoConvertitoInFloat > oreTotaliPermessoInputConvertitoInFloat){
-                float diferenzaDaAumentare = oreTotaliPermessoConvertitoInFloat - oreTotaliPermessoInputConvertitoInFloat;
-                contratto.setOreFerieUtilizzate(contratto.getOreFerieUtilizzate() - diferenzaDaAumentare);
-                contrattoRepository.save(contratto);
-            }else {
-                float diferenzaDaAumentare = oreTotaliPermessoConvertitoInFloat - oreTotaliPermessoInputConvertitoInFloat;
-                contratto.setOreFerieUtilizzate(contratto.getOreFerieUtilizzate() + diferenzaDaAumentare);
-                contrattoRepository.save(contratto);
-            }
-
         }
-        presenzaEsistente.setOraEntrata(presenza.getOraEntrata());
-        presenzaEsistente.setOraUscita(presenza.getOraUscita());
-        presenzaEsistente.setModalita(presenza.getModalita());
-        presenzaEsistente.setStato(presenza.getStato());
-        return presenzaRepository.save(presenzaEsistente);
+
+        if (presenza.getStato().equals(StatoPresenza.PRESENTE)){
+            try{
+                return editConPresenza(presenza, presenzaEsistente, principal);
+            }catch (PresenzaOreInseriteNonValide ex){
+                throw new PresenzaOreInseriteNonValide("Ore inserite non valide");
+            }catch (PresenzaErrorOreGiornataSuperiori ex){
+                throw new PresenzaOreInseriteNonValide("Da richiedere lo straordinario per poter procedere");
+            }
+        }
+
+        if (presenza.getStato().equals(StatoPresenza.PERMESSO)){
+            try {
+                return editConPermesso(presenza,presenzaEsistente,dipendente);
+            }catch (PresenzaOreInseriteNonValide ex){
+                throw new PresenzaOreInseriteNonValide("Ore inserite non valide");
+            }catch (PresenzaErrorOreGiornataSuperiori ex){
+                throw new PresenzaOreInseriteNonValide("Da richiedere lo straordinario per poter procedere");
+            }
+        }
+        return null;
+    }
+
+    private Presenza editConFerie(Presenza presenza,Presenza presenzaEsistente, Dipendente dipendente) throws IllegalArgumentException{
+        String data = presenzaEsistente.getData().toString();
+        List<Presenza> presenzaPerData = presenzaRepository.findBySearchData(dipendente, data);
+        for (Presenza p : presenzaPerData){
+            if (p.getStato().equals(StatoPresenza.PERMESSO)){
+                Optional<Contratto> c = contrattoRepository.findBydipendente(dipendente);
+                if (c.isPresent()){
+                    float oraInizioPermesso = p.getOraEntrata().getHour();
+                    float oraFinePermesso = p.getOraUscita().getHour();
+                    float oreTotaliPermesso = oraFinePermesso - oraInizioPermesso;
+                    oreTotaliPermesso = Math.abs(oreTotaliPermesso);
+
+                    //Mi riassegno le ore del permesso
+                    c.get().setOreFerieUtilizzate(c.get().getOreFerieUtilizzate() - oreTotaliPermesso);
+                }
+                contrattoRepository.save(c.get());
+            }
+            if (!presenzaEsistente.getIdPresenza().equals(p.getIdPresenza())){
+                presenzaRepository.delete(p);
+            }else {
+                presenzaEsistente.setStato(presenza.getStato());
+                presenzaEsistente.setOraEntrata(null);
+                presenzaEsistente.setOraUscita(null);
+                presenzaEsistente.setDataInizioFerie(presenzaEsistente.getData());
+                presenzaEsistente.setDataFineFerie(presenzaEsistente.getData());
+                presenzaEsistente.setStato(StatoPresenza.FERIE);
+                //Tologo ore
+                Optional<Contratto> c = contrattoRepository.findBydipendente(dipendente);
+                if (c.isPresent()){
+                    c.get().setOreFerieUtilizzate(c.get().getOreFerieUtilizzate() + 8);
+                }
+                contrattoRepository.save(c.get());
+                presenzaRepository.save(presenzaEsistente);
+            }
+        }
+        return null;
+    }
+
+    private Presenza editConPresenza(Presenza presenza, Presenza presenzaEsistente, Principal principal)throws PresenzaOreInseriteNonValide,
+            PresenzaErrorOreGiornataSuperiori{
+        Utente utente = loginService.recuperoUtente(principal);
+        Dipendente dipendente = utente.getDipendente();
+
+        Optional<Contratto> contrattoEsistente = contrattoRepository.findBydipendente(dipendente);
+        if (contrattoEsistente.isPresent()){
+            if (presenzaEsistente.getStato().equals(StatoPresenza.PERMESSO)){
+                float oraInizioPermesso = presenzaEsistente.getOraEntrata().getHour();
+                float oraFinePermesso = presenzaEsistente.getOraUscita().getHour();
+                float oreDaAggiure = oraFinePermesso-oraInizioPermesso;
+                contrattoEsistente.get().setOreFerieUtilizzate(contrattoEsistente.get().getOreFerieUtilizzate() + oreDaAggiure);
+                Presenza p = presenzaEsistente;
+
+                //Verifico se ci sono altre date e se le ore totali superano le 8h
+                Optional<Presenza> presenzaPerData = presenzaRepository.findByDataAndStato(presenzaEsistente.getData(),
+                        StatoPresenza.PERMESSO,dipendente);
+                float oreTotaliDelGiorno =0;
+                if (presenzaPerData.isPresent()){
+                    float oraEntrata = presenzaPerData.get().getOraEntrata().getHour();
+                    float oraUscita = presenzaPerData.get().getOraUscita().getHour();
+                    oreTotaliDelGiorno = oraUscita - oraEntrata;
+
+                    float oraEntrataInput = presenza.getOraUscita().getHour();
+                    float oraUscitaInput = presenza.getOraEntrata().getHour();
+                    float oreTotInput = oraUscitaInput - oraEntrataInput;
+
+                    String dataRicerca = presenzaEsistente.getData().toString();
+                    float totale = 0;
+                    List<Presenza> presenzaDelloStessoGiorno = presenzaRepository.findBySearchData(dipendente,dataRicerca);
+                    for (Presenza presenzaPerDataGiono : presenzaDelloStessoGiorno){
+                        if (!presenzaPerDataGiono.getIdPresenza().equals(presenzaPerData.get().getIdPresenza())){
+                            float ora = presenzaPerDataGiono.getOraEntrata().getHour();
+                            float uscita = presenzaPerDataGiono.getOraUscita().getHour();
+                            totale = uscita - ora;
+                        }
+                    }
+
+                    float oreTotaliGiorno = totale + oreTotInput;
+                    if (oreTotaliGiorno > 8){
+                        log.warning("Con la modifica le ore sono superiori ad 8");
+                        throw new PresenzaErrorOreGiornataSuperiori("Da richiedere lo straordinario per poter procedere");
+                    }
+                }
+
+                p.setOraEntrata(presenza.getOraEntrata());
+                p.setOraUscita(presenza.getOraUscita());
+                p.setModalita(presenza.getModalita());
+                p.setStato(StatoPresenza.PRESENTE);
+                contrattoRepository.save(contrattoEsistente.get());
+                return presenzaRepository.save(p);
+            }else if (presenzaEsistente.getStato().equals(StatoPresenza.FERIE)){
+                LocalDate dataInizioFerie = presenzaEsistente.getDataInizioFerie();
+                LocalDate dataFineFerie = presenzaEsistente.getDataFineFerie();
+                int oreDataRinserire = 0;
+
+                for (LocalDate dataInizio = dataInizioFerie.minusDays(1); dataInizio.isBefore(dataFineFerie);
+                     dataInizio = dataInizio.plusDays(1)){
+                    oreDataRinserire += 8;
+                }
+
+                Presenza presenzaEsistenteEdit = presenzaEsistente;
+                presenzaEsistenteEdit.setDataFineFerie(null);
+                presenzaEsistenteEdit.setDataInizioFerie(null);
+                presenzaEsistenteEdit.setModalita(presenza.getModalita());
+                presenzaEsistenteEdit.setOraEntrata(presenza.getOraEntrata());
+                if (presenza.getOraEntrata().isAfter(presenza.getOraUscita())){
+                    log.warning("Ore inserite non valide");
+                   throw new PresenzaOreInseriteNonValide("ora non valide");
+                }
+                presenzaEsistenteEdit.setOraEntrata(presenza.getOraEntrata());
+                presenzaEsistenteEdit.setOraUscita(presenza.getOraUscita());
+                presenzaEsistenteEdit.setStato(StatoPresenza.PRESENTE);
+                presenzaRepository.save(presenzaEsistenteEdit);
+                //Mi salvo anche il contratto con le ore aggiunte
+                contrattoEsistente.get().setOreFerieUtilizzate(contrattoEsistente.get().getOreFerieUtilizzate() - oreDataRinserire);
+                contrattoRepository.save(contrattoEsistente.get());
+                log.info("modifica effettuato correttamente");
+            }
+        }
+        return presenza;
+    }
+
+    private Presenza editConPermesso(Presenza presenza, Presenza presenzaEsistente, Dipendente dipendente)throws PresenzaOreInseriteNonValide,
+            PresenzaErrorOreGiornataSuperiori{
+        if (presenzaEsistente.getStato().equals(StatoPresenza.PRESENTE)){
+            float dataInizioPermesso = presenza.getOraEntrata().getHour();
+            float dataFinePermesso = presenza.getOraUscita().getHour();
+            float durataPermesso = dataFinePermesso - dataInizioPermesso;
+            durataPermesso = Math.abs(durataPermesso);
+            if (durataPermesso > 8 && !presenzaEsistente.isGiornataStraordinario()){
+                log.warning("Ore permesso superiori ad 8h");
+                throw new PresenzaOreInseriteNonValide("Ore permesso superiori ad 8h");
+            }
+            //Verifico se ci sono altre righe con lo stessa data
+            String data = presenzaEsistente.getData().toString();
+            List<Presenza> presenzaPerData = presenzaRepository.findBySearchData(dipendente, data);
+            float oraTotaliNellaGiornata = durataPermesso;
+            for (Presenza p : presenzaPerData){
+                if (!p.getIdPresenza().equals(presenzaEsistente.getIdPresenza())){
+                    float oraEntrata = p.getOraEntrata().getHour();
+                    float oraUscita = p.getOraUscita().getHour();
+                    float oreTot = oraUscita - oraEntrata;
+                    oraTotaliNellaGiornata += oreTot;
+                }
+            }
+            if (oraTotaliNellaGiornata > 8){
+                log.warning("Nella giornata presenti più di 8h");
+                throw new PresenzaErrorOreGiornataSuperiori("Nella giornata presenti più di 8h");
+            }
+
+            presenzaEsistente.setOraUscita(presenza.getOraUscita());
+            presenzaEsistente.setOraEntrata(presenza.getOraEntrata());
+            presenzaEsistente.setModalita(presenza.getModalita());
+            presenzaEsistente.setStato(StatoPresenza.PERMESSO);
+            Optional<Contratto> c = contrattoRepository.findBydipendente(dipendente);
+            c.get().setOreFerieUtilizzate(c.get().getOreFerieUtilizzate() + durataPermesso);
+            return presenzaRepository.save(presenzaEsistente);
+        } else if (presenzaEsistente.getStato().equals(StatoPresenza.FERIE)) {
+            presenzaEsistente.setDataInizioFerie(null);
+            presenzaEsistente.setDataFineFerie(null);
+            presenzaEsistente.setModalita(presenza.getModalita());
+            presenzaEsistente.setStato(StatoPresenza.PERMESSO);
+            presenzaEsistente.setOraEntrata(presenza.getOraEntrata());
+            presenzaEsistente.setOraUscita(presenza.getOraUscita());
+            float dataInizioPermesso = presenza.getOraEntrata().getHour();
+            float dataFinePermesso = presenza.getOraUscita().getHour();
+            float durataPermesso = dataFinePermesso - dataInizioPermesso;
+            durataPermesso = Math.abs(durataPermesso);
+            if (durataPermesso > 8 && !presenzaEsistente.isGiornataStraordinario()){
+                log.warning("Ore permesso superiori ad 8h");
+                throw new PresenzaOreInseriteNonValide("Ore permesso superiori ad 8h");
+            }
+            //Verifico le ore
+            Contratto c = contrattoRepository.findBydipendente(dipendente).get();
+            c.setOreFerieUtilizzate(c.getOreFerieUtilizzate() - 8 + durataPermesso);
+            contrattoRepository.save(c);
+            return presenzaRepository.save(presenzaEsistente);
+        }
+        return null;
     }
 
     public boolean chiudiGiornata(Long idPresenza) throws ArithmeticException{
