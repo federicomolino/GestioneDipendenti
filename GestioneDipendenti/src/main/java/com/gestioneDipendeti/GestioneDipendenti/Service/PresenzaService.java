@@ -309,6 +309,50 @@ public class PresenzaService {
                 contrattoEsistente.get().setOreFerieUtilizzate(contrattoEsistente.get().getOreFerieUtilizzate() - oreDataRinserire);
                 contrattoRepository.save(contrattoEsistente.get());
                 log.info("modifica effettuato correttamente");
+            } else if (presenza.getStato().equals(StatoPresenza.PRESENTE)) {
+                String data = presenzaEsistente.getData().toString();
+                List<Presenza> p = presenzaRepository.findBySearchData(dipendente,data);
+                float oreTotaliGiornataMenoUna = 0;
+                if (p.size() > 1){
+                    for (Presenza presenzaPerData : p){
+                        if (!presenzaPerData.getIdPresenza().equals(presenzaEsistente.getIdPresenza())){
+                            float oraEntrata = presenzaPerData.getOraEntrata().getHour();
+                            float oraUscita = presenzaPerData.getOraUscita().getHour();
+                            oreTotaliGiornataMenoUna = oraUscita - oraEntrata;
+                        }
+                    }
+                    float oraEntrataInput = presenza.getOraEntrata().getHour();
+                    float oraUcitaInput = presenza.getOraUscita().getHour();
+                    float oreTotaliInput = oraUcitaInput - oraEntrataInput;
+                    if (oreTotaliInput + oreTotaliGiornataMenoUna > 8){
+                        log.warning("Ore inserite giornata superiori ad 8");
+                        throw new PresenzaErrorOreGiornataSuperiori("Ore inserite giornata superiori ad 8");
+                    }
+                    if (oreTotaliInput + oreTotaliGiornataMenoUna < 8 && presenzaEsistente.isChiudiGiornata()){
+                        List<Presenza> presenzaPerDataChiudiGiornata= presenzaRepository.findBySearchData(dipendente,data);
+                        for (Presenza p2 : presenzaPerDataChiudiGiornata){
+                            p2.setChiudiGiornata(false);
+                        }
+                    }
+                    presenzaEsistente.setOraEntrata(presenza.getOraEntrata());
+                    presenzaEsistente.setOraUscita(presenza.getOraUscita());
+                    presenzaEsistente.setModalita(presenza.getModalita());
+                    return presenzaRepository.save(presenzaEsistente);
+                }
+                float oraEntrataInput = presenza.getOraEntrata().getHour();
+                float oraUcitaInput = presenza.getOraUscita().getHour();
+                float oreTotaliInput = oraUcitaInput - oraEntrataInput;
+                if (oreTotaliInput > 8){
+                    log.warning("Ore inserite giornata superiori ad 8");
+                    throw new PresenzaErrorOreGiornataSuperiori("Ore inserite giornata superiori ad 8");
+                } else if (oreTotaliInput < 8 && presenzaEsistente.isChiudiGiornata()) {
+                    presenzaEsistente.setChiudiGiornata(false);
+                    presenzaRepository.save(presenzaEsistente);
+                }
+                presenzaEsistente.setOraEntrata(presenza.getOraEntrata());
+                presenzaEsistente.setOraUscita(presenza.getOraUscita());
+                presenzaEsistente.setModalita(presenza.getModalita());
+                return presenzaRepository.save(presenzaEsistente);
             }
         }
         return presenza;
