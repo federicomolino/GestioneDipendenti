@@ -60,24 +60,34 @@
 
         <div class="ms-3 border border-black rounded mb-2">
           <button type="submit" class="border rounded" title="Ricerca Per Mese">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
               <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
             </svg>
           </button>
+        </div>
+
+        <div class="ms-2 border border-black rounded mb-2">
+          <a href="/busta" class="btn btn-sm border rounded" title="Ricarica">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+              <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+            </svg>
+          </a>
         </div>
       </div>
     </form>
 
     <div th:each="listBustePaga : ${bustePaga}">
       <div class="ms-3">
-        <form method="post" th:action="@{/stampa/{idBustaPaga}(idBustaPaga=${listBustePaga.idBustaPaga})}">
+        <a th:href="@{/busta/stampa/{idBustaPaga}(idBustaPaga=${listBustePaga.idBustaPaga})}"
+           class="link-underline link-underline-opacity-0">
           <div class="row col-5 mt-2">
             <button type="submit" class="border btn btn-sm btn-outline-light">
               <span class="text-dark">Stampa Busta Paga del: </span>
-              <strong class="text-dark" th:text="${listBustePaga.mese}">2025-07</a></strong>
+              <strong class="text-dark" th:text="${listBustePaga.mese}">2025-07</strong>
             </button>
           </div>
-        </form>
+        </a>
       </div>
     </div>
   </div>
