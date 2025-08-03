@@ -47,6 +47,25 @@ public class Dipendente {
     @OneToOne(mappedBy = "dipendente")
     private MacchinaAziendale macchinaAziendale;
 
+    @OneToMany(mappedBy = "dipendente")
+    private List<BustaPaga> bustaPaga;
+
+    public MacchinaAziendale getMacchinaAziendale() {
+        return macchinaAziendale;
+    }
+
+    public void setMacchinaAziendale(MacchinaAziendale macchinaAziendale) {
+        this.macchinaAziendale = macchinaAziendale;
+    }
+
+    public List<BustaPaga> getBustaPaga() {
+        return bustaPaga;
+    }
+
+    public void setBustaPaga(List<BustaPaga> bustaPaga) {
+        this.bustaPaga = bustaPaga;
+    }
+
     public Utente getUtente() {
         return utente;
     }

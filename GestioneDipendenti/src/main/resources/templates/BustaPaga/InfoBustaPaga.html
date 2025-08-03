@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Info Buste Paga</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/Navbar.css">
+</head>
+<body>
+<!--importo navbar-->
+<div th:replace="~{Navbar/navbar :: navbar}"></div>
+<div class="container">
+  <div class="row">
+    <div>
+      <h2>I Miei Documenti</h2>
+    </div>
+  </div>
+
+  <!--Messaggi successo ed errore-->
+  <div th:if="${successMessage}" class="alert alert-success d-flex justify-content-between mt-2 col-4 mx-auto">
+    <span th:text="${successMessage}">OK</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div th:if="${errorMessage}" class="alert alert-danger d-flex justify-content-between mt-2 col-4 mx-auto">
+    <span th:text="${errorMessage}">Errore</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div class="row">
+    <div class="d-flex justify-content-between">
+      <div class="mt-2 mb-1">
+        <strong>Buste Paga</strong>
+      </div>
+
+      <div sec:authorize="hasAuthority('ADMIN')">
+        <form method="post" th:action="@{/busta/genera/bustePaghe}">
+          <button type="submit" class="btn btn-sm" id="generaBustePaghe" disabled>
+            Genera Buste Paghe
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!--Nessuna Busta Presente-->
+  <div th:if="${bustePaga == null or #lists.isEmpty(bustePaga)}">
+    <div>
+      <span class="text-danger">Nessuna Busta Paga Presente</span>
+    </div>
+  </div>
+
+  <!--Busta Presente-->
+  <div th:if="${bustePaga != null and !#lists.isEmpty(bustePaga)}">
+    <form method="get" th:action="@{/busta}">
+      <div class="d-flex">
+        <div class="mt-1">
+          <input type="month" class="border rounded" id="ricercaPerMese" name="ricercaPerMese">
+        </div>
+
+        <div class="ms-3 border border-black rounded mb-2">
+          <button type="submit" class="border rounded" title="Ricerca Per Mese">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <div th:each="listBustePaga : ${bustePaga}">
+      <div class="ms-3">
+        <form method="post" th:action="@{/stampa/{idBustaPaga}(idBustaPaga=${listBustePaga.idBustaPaga})}">
+          <div class="row col-5 mt-2">
+            <button type="submit" class="border btn btn-sm btn-outline-light">
+              <span class="text-dark">Stampa Busta Paga del: </span>
+              <strong class="text-dark" th:text="${listBustePaga.mese}">2025-07</a></strong>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--Importo script-->
+<script src ="/InfoBustaPaga.js"></script>
+</body>
+</html>

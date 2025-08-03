@@ -155,7 +155,6 @@
                             </div>
 
                             <div class="col-4 d-flex justify-content-evenly">
-
                               <a type="submit" class="btn btn-sm border-dark" sec:authorize="hasAuthority('ADMIN')"
                                  title="Vedi contratto dipendente"
                                  th:href="@{utente-contratto/contratto/edit/{IdUtente}(IdUtente=${utenti.IdUtente})}">

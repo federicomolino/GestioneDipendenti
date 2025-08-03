@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Busta Paga</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/Navbar.css">
+</head>
+<body>
+<style>
+  body:{ font-family: sans-serif; }
+</style>
+<div class="container">
+  <div class="row">
+    <div class="d-flex justify-content-center mt-3">
+      <h4 th:text="'Busta Paga - ' + ${paga.mese}">Busta Paga - Luglio</h4>
+    </div>
+  </div>
+
+  <!--Dati busta-->
+  <div class="row">
+    <div class="col-8 mt-4 mx-auto"> <!-- <-- 'mx-auto' centra il blocco -->
+      <div class="d-flex justify-content-between">
+        <!-- Dati del dipendente -->
+        <div>
+          <div>
+            <strong>Dipendente:</strong>
+            <span th:text="${dipendente.nome + ' ' + dipendente.cognome}">Federico Molino</span>
+          </div>
+
+          <div class="mt-2">
+            <strong>Luogo di Nascita:</strong>
+            <span th:text="${dipendente.luogoDiNascita}">Rimini</span>
+          </div>
+
+          <div class="mt-2">
+            <strong>Anno di Nascita:</strong>
+            <span th:text="${dipendente.dataDiNascita}">19/01/2004</span>
+          </div>
+        </div>
+
+        <!-- Ruolo Dipendente -->
+        <div>
+          <div>
+            <strong>Ruolo:</strong>
+            <span th:text="${ruolo.nome}">Software Developer</span>
+          </div>
+
+          <div class="mt-2">
+            <strong>Area Funzionale:</strong>
+            <span th:text="${ruolo.areaFunzionale}">Produzione Sanità</span>
+          </div>
+        </div>
+      </div>
+      <hr>
+
+      <div class="border">
+        <div class="row">
+          <div class="col-6">
+            <div class="ms-2">
+              <strong>Voce</strong>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="ms-2">
+              <strong>Importo (€)</strong>
+            </div>
+          </div>
+        </div>
+        <hr class="my-2">
+
+        <div class="row">
+          <div class="col-6">
+            <div class="ms-2">
+              <span>Stipendio Lordo</span>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="ms-2">
+              <span>0</span>
+            </div>
+          </div>
+        </div>
+        <hr class="my-2">
+
+        <div class="row">
+          <div class="col-6">
+            <div class="ms-2">
+              <span>Straordinari</span>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="ms-2">
+              <span>0</span>
+            </div>
+          </div>
+        </div>
+        <hr class="my-2">
+
+        <div class="row">
+          <div class="col-6">
+            <div class="ms-2">
+              <span>Trattenute</span>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="ms-2">
+              <span>0</span>
+            </div>
+          </div>
+        </div>
+        <hr class="my-2">
+
+        <div class="row">
+          <div class="col-6">
+            <div class="ms-2">
+              <strong>Stipendio Netto</strong>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="ms-2">
+              <span>0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--Firma-->
+      <div class="mt-5">
+        <span>Firma: ________________________</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
