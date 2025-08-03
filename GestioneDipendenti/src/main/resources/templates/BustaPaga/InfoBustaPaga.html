@@ -70,14 +70,15 @@
 
     <div th:each="listBustePaga : ${bustePaga}">
       <div class="ms-3">
-        <form method="post" th:action="@{/stampa/{idBustaPaga}(idBustaPaga=${listBustePaga.idBustaPaga})}">
+        <a th:href="@{/busta/stampa/{idBustaPaga}(idBustaPaga=${listBustePaga.idBustaPaga})}"
+           class="link-underline link-underline-opacity-0">
           <div class="row col-5 mt-2">
             <button type="submit" class="border btn btn-sm btn-outline-light">
               <span class="text-dark">Stampa Busta Paga del: </span>
-              <strong class="text-dark" th:text="${listBustePaga.mese}">2025-07</a></strong>
+              <strong class="text-dark" th:text="${listBustePaga.mese}">2025-07</strong>
             </button>
           </div>
-        </form>
+        </a>
       </div>
     </div>
   </div>

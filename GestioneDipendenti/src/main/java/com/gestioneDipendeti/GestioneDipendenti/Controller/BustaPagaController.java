@@ -3,24 +3,25 @@ package com.gestioneDipendeti.GestioneDipendenti.Controller;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.BustaPaga;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
+import com.gestioneDipendeti.GestioneDipendenti.Entity.Ruolo;
 import com.gestioneDipendeti.GestioneDipendenti.Exception.BustaPagaPresente;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.BustaPagaRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.DipendenteRepository;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.RuoloRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Service.InfoBustaPagaService;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Controller
@@ -37,16 +38,19 @@ public class BustaPagaController {
 
     private InfoBustaPagaService infoBustaPagaService;
 
+    private RuoloRepository ruoloRepository;
+
 
     @Autowired
     public BustaPagaController(BustaPagaRepository bustaPagaRepository, LoginService loginService, DipendenteRepository
                                dipendenteRepository, ContrattoRepository contrattoRepository, InfoBustaPagaService
-                               infoBustaPagaService){
+                               infoBustaPagaService, RuoloRepository ruoloRepository){
         this.bustaPagaRepository = bustaPagaRepository;
         this.loginService = loginService;
         this.dipendenteRepository = dipendenteRepository;
         this.contrattoRepository = contrattoRepository;
         this.infoBustaPagaService = infoBustaPagaService;
+        this.ruoloRepository = ruoloRepository;
     }
 
     @GetMapping
@@ -61,6 +65,7 @@ public class BustaPagaController {
                 return "redirect:/busta";
             }else {
                 model.addAttribute("bustePaga", b);
+                return "BustaPaga/InfoBustaPaga";
             }
         }
 
@@ -101,5 +106,28 @@ public class BustaPagaController {
             redirectAttributes.addFlashAttribute("errorMessage", "Buste Paga già presenti");
             return "redirect:/busta";
         }
+    }
+
+    @GetMapping("/stampa/{idBustaPaga}")
+    public String showBustaPaga(@PathVariable("idBustaPaga")long idBustaPaga, Model model){
+        Optional<BustaPaga> bustaPagaId = bustaPagaRepository.findById(idBustaPaga);
+        if (bustaPagaId.isPresent()){
+            //Mi prendo la data e passo al front il nome del mese
+            String meseFormattato = bustaPagaId.get().getMese().getMonth().
+                    getDisplayName(TextStyle.FULL, Locale.ITALIAN).toUpperCase();
+            //Prendo dati del dipendente
+            Optional<Dipendente> dipendente = dipendenteRepository.findById(bustaPagaId.get().getDipendente().getIdDipendente());
+            if (dipendente.isPresent()){
+                Optional<Ruolo> ruoloDipendente = ruoloRepository.findByDipendente(dipendente.get());
+                if (ruoloDipendente.isPresent()){
+                    model.addAttribute("bustaPaga",bustaPagaId.get());
+                    model.addAttribute("dipendente",dipendente.get());
+                    model.addAttribute("ruolo",ruoloDipendente.get());
+                    model.addAttribute("meseFormattato",meseFormattato);
+                    return "BustaPaga/BustaPagaModel";
+                }
+            }
+        }
+        return "redirect:/busta";
     }
 }
