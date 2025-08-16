@@ -39,7 +39,7 @@ public class InfoBustaPagaService {
          LocalDate data = LocalDate.now().minusMonths(1);
          String dataString = data.toString().substring(0, 7); // "2025-08"
         for (Dipendente d : dipendentiConContratto){
-            if (verificaCompletezzaMese(d)){
+            if (verificaCompletezzaMese(d, null)){
                 int numeroGiornateStraordinario = 0;
                 List<Presenza> presenzaPerDipendenteEMese = presenzaRepository.findByMeseLike(d,dataString);
                 for (int p = 0; p < presenzaPerDipendenteEMese.size(); p++){
@@ -112,40 +112,77 @@ public class InfoBustaPagaService {
         }
     }
 
-    private boolean verificaCompletezzaMese(Dipendente dipendente){
-        LocalDate data = LocalDate.now();
-        LocalDate primoDelMese = data.withDayOfMonth(1);
-        int giorniNelMese = data.lengthOfMonth();
+    private boolean verificaCompletezzaMese(Dipendente dipendente, String dataMese){
+        if (dataMese == null){
+            LocalDate data = LocalDate.now();
+            LocalDate primoDelMese = data.withDayOfMonth(1);
+            int giorniNelMese = data.lengthOfMonth();
 
 
-        int countNumeroGiornateLavorativeMese = 0;
-        for(int i = 0; i < giorniNelMese; i++){
-            LocalDate giorno = primoDelMese.plusDays(i);
-            DayOfWeek dow = giorno.getDayOfWeek();
+            int countNumeroGiornateLavorativeMese = 0;
+            for(int i = 0; i < giorniNelMese; i++){
+                LocalDate giorno = primoDelMese.plusDays(i);
+                DayOfWeek dow = giorno.getDayOfWeek();
 
-            if (dow != DayOfWeek.SATURDAY && dow != DayOfWeek.SUNDAY){
-                countNumeroGiornateLavorativeMese ++;
+                if (dow != DayOfWeek.SATURDAY && dow != DayOfWeek.SUNDAY){
+                    countNumeroGiornateLavorativeMese ++;
+                }
             }
-        }
 
-        String dataForm = data.toString().substring(0,7);
-        List<Presenza> p = presenzaRepository.findByMeseLike(dipendente,dataForm);
-        int countGiornateTimbrate = p.size() +1;
-        //Verifica chiusura giornata
-        for (Presenza pre : p){
-            if (!pre.isChiudiGiornata()){
-                logInfoBustaPaga.warning("Giornata non chiusa per il dipendente con ID: " + dipendente.getIdDipendente() +
-                        " per la giornata " + pre.getData());
+            String dataForm = data.toString().substring(0,7);
+            List<Presenza> p = presenzaRepository.findByMeseLike(dipendente,dataForm);
+            int countGiornateTimbrate = p.size() +1;
+            //Verifica chiusura giornata
+            for (Presenza pre : p){
+                if (!pre.isChiudiGiornata()){
+                    logInfoBustaPaga.warning("Giornata non chiusa per il dipendente con ID: " + dipendente.getIdDipendente() +
+                            " per la giornata " + pre.getData());
+                    return false;
+                }
+            }
+            //Se torna true le giornate timbrate corrispondono correttamente se no manca qualcosa
+            if (countGiornateTimbrate == countNumeroGiornateLavorativeMese){
+                return true;
+            }else {
+                logInfoBustaPaga.warning("Giornate timbrate != da giornate mensili per dipendente con ID: "
+                        +dipendente.getIdDipendente() );
                 return false;
             }
-        }
-        //Se torna true le giornate timbrate corrispondono correttamente se no manca qualcosa
-        if (countGiornateTimbrate == countNumeroGiornateLavorativeMese){
-            return true;
         }else {
-            logInfoBustaPaga.warning("Giornate timbrate != da giornate mensili per dipendente con ID: "
-                    +dipendente.getIdDipendente() );
-            return false;
+            LocalDate data = LocalDate.parse(dataMese + "-01");
+            LocalDate primoDelMese = data.withDayOfMonth(1);
+            int giorniNelMese = data.lengthOfMonth();
+
+
+            int countNumeroGiornateLavorativeMese = 0;
+            for(int i = 0; i < giorniNelMese; i++){
+                LocalDate giorno = primoDelMese.plusDays(i);
+                DayOfWeek dow = giorno.getDayOfWeek();
+
+                if (dow != DayOfWeek.SATURDAY && dow != DayOfWeek.SUNDAY){
+                    countNumeroGiornateLavorativeMese ++;
+                }
+            }
+
+            String dataForm = data.toString().substring(0,7);
+            List<Presenza> p = presenzaRepository.findByMeseLike(dipendente,dataForm);
+            int countGiornateTimbrate = p.size();
+            //Verifica chiusura giornata
+            for (Presenza pre : p){
+                if (!pre.isChiudiGiornata()){
+                    logInfoBustaPaga.warning("Giornata non chiusa per il dipendente con ID: " + dipendente.getIdDipendente() +
+                            " per la giornata " + pre.getData());
+                    return false;
+                }
+            }
+            //Se torna true le giornate timbrate corrispondono correttamente se no manca qualcosa
+            if (countGiornateTimbrate == countNumeroGiornateLavorativeMese){
+                return true;
+            }else {
+                logInfoBustaPaga.warning("Giornate timbrate != da giornate mensili per dipendente con ID: "
+                        +dipendente.getIdDipendente() );
+                return false;
+            }
         }
     }
 
@@ -161,7 +198,7 @@ public class InfoBustaPagaService {
                 + " e il mese " + dataMensile );
                 throw new BustaPagaPresente("Busta paga già presente");
             }else {
-                if (verificaCompletezzaMese(dipendente)){
+                if (verificaCompletezzaMese(dipendente,null)){
                     try{
                         BustaPaga bustaPagaPerMese = new BustaPaga();
                         LocalDate data = LocalDate.parse(dataMensile);
@@ -210,5 +247,64 @@ public class InfoBustaPagaService {
             logInfoBustaPaga.warning("Contratto non presente per il dipendente con Id" + dipendente.getIdDipendente());
             throw new IllegalArgumentException("Contratto non presente per il dipendente");
         }
+    }
+
+    public BustaPaga generaBustaPagaPerDipendetiConData(Dipendente dipendente, String data)throws BustaPagaPresente,
+            MeseNonCompletoError,ArithmeticException{
+        //Verifico se la busta paga è già stata generata
+        Optional<Contratto> c = contrattoRepository.findBydipendente(dipendente);
+        if (c.isPresent()){
+            if(ricercaBustaPagaPerMese(data,dipendente) == null){
+                //Verifico il mese se è ok
+                if (verificaCompletezzaMese(dipendente,data)){
+                    try{
+                        BustaPaga bustaPagaPerMese = new BustaPaga();
+                        LocalDate d = LocalDate.parse(data + "-01");
+                        bustaPagaPerMese.setMese(d);
+                        bustaPagaPerMese.setDipendente(dipendente);
+                        //Mi prendo le giornate di straordinarie fatte nel mese dal singolo dipendente e le
+                        //aggiungo
+                        int numeroGiornateStraordinario = 0;
+                        List<Presenza> presenzaPerDipendenteEMese = presenzaRepository.findByMeseLike(dipendente,data);
+                        for (int p = 0; p < presenzaPerDipendenteEMese.size(); p++){
+                            //Se la giornata è straordinario aumento di 1 il count
+                            if (presenzaPerDipendenteEMese.get(p).isGiornataStraordinario()){
+                                numeroGiornateStraordinario += 1;
+                            }
+                        }
+                        bustaPagaPerMese.setNumeroStraordinariPerMese(numeroGiornateStraordinario);
+                        bustaPagaPerMese.setTrattenuta(200);
+                        //Calcolo Stipendio lordo
+                        float stipendioLordoMensile = c.get().getStipendioLordo().floatValue() / 14;
+                        bustaPagaPerMese.setStipendioLordo(stipendioLordoMensile);
+                        //Calcolo stipendio Netto mensile
+                        float stipendioNettoMensile = stipendioLordoMensile - bustaPagaPerMese.getTrattenuta();
+
+                        //Verifico se ci sono straordinari da calcolare
+                        int numeroStraordinari = bustaPagaPerMese.getNumeroStraordinariPerMese();
+                        if (numeroStraordinari > 0){
+                            float importoDaAggiungereNetto = numeroStraordinari * 50;
+                            stipendioNettoMensile += importoDaAggiungereNetto;
+                            bustaPagaPerMese.setStipendioNetto(stipendioNettoMensile);
+                        }else {
+                            bustaPagaPerMese.setStipendioNetto(stipendioNettoMensile);
+                        }
+                        logInfoBustaPaga.info("Busta Paga Creata con Successo");
+                        return bustaPagaRepository.save(bustaPagaPerMese);
+                    }catch (Exception ex){
+                        logInfoBustaPaga.warning("Errore durante la creazione della busta paga per il dipendnete " +
+                                dipendente.getIdDipendente());
+                        throw  new ArithmeticException("Errore durante la creazione della busta paga");
+                    }
+                }else {
+                    logInfoBustaPaga.warning("Errore durante la verifica della completezza del mese");
+                    throw new MeseNonCompletoError("Errore durante la verifica della completezza del mese");
+                }
+            }else {
+                logInfoBustaPaga.warning("Busta Paga del mese indicato già generata");
+                throw new BustaPagaPresente("Busta Paga già presente");
+            }
+        }
+        return null;
     }
 }

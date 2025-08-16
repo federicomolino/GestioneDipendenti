@@ -62,44 +62,88 @@
   </div>
 
   <!--Busta Presente-->
-  <div th:if="${bustePaga != null and !#lists.isEmpty(bustePaga)}">
-    <form method="get" th:action="@{/busta}">
-      <div class="d-flex">
-        <div class="mt-1">
-          <input type="month" class="border rounded" id="ricercaPerMese" name="ricercaPerMese">
-        </div>
+  <div class="row">
+    <div class="col-8">
+      <div th:if="${bustePaga != null and !#lists.isEmpty(bustePaga)}">
+        <form method="get" th:action="@{/busta}">
+          <div class="d-flex">
+            <div class="mt-1">
+              <input type="month" class="border rounded" id="ricercaPerMese" name="ricercaPerMese">
+            </div>
 
-        <div class="ms-3 border border-black rounded mb-2">
-          <button type="submit" class="border rounded" title="Ricerca Per Mese">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-            </svg>
-          </button>
-        </div>
+            <div class="ms-3 border border-black rounded mb-2">
+              <button type="submit" class="border rounded" title="Ricerca Per Mese">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                </svg>
+              </button>
+            </div>
 
-        <div class="ms-2 border border-black rounded mb-2">
-          <a href="/busta" class="btn btn-sm border rounded" title="Ricarica">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
-              <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-    </form>
-
-    <div th:each="listBustePaga : ${bustePaga}">
-      <div class="ms-3">
-        <a th:href="@{/busta/stampa/{idBustaPaga}(idBustaPaga=${listBustePaga.idBustaPaga})}"
-           class="link-underline link-underline-opacity-0">
-          <div class="row col-5 mt-2">
-            <button type="submit" class="border btn btn-sm btn-outline-light">
-              <span class="text-dark">Stampa Busta Paga del: </span>
-              <strong class="text-dark" th:text="${listBustePaga.mese}">2025-07</strong>
-            </button>
+            <div class="ms-2 border border-black rounded mb-2">
+              <a href="/busta" class="btn btn-sm border rounded" title="Ricarica">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                </svg>
+              </a>
+            </div>
           </div>
-        </a>
+        </form>
+
+        <div>
+          <div class="col-12">
+            <div th:each="listBustePaga : ${bustePaga}">
+              <div class="ms-3">
+                <a th:href="@{/busta/stampa/{idBustaPaga}(idBustaPaga=${listBustePaga.idBustaPaga})}"
+                   class="link-underline link-underline-opacity-0">
+                  <div class="row col-5 mt-2">
+                    <button type="submit" class="border btn btn-sm btn-outline-light">
+                      <span class="text-dark">Stampa Busta Paga del: </span>
+                      <strong class="text-dark" th:text="${listBustePaga.mese}">2025-07</strong>
+                    </button>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <!--Genera Per Dipendente-->
+    <div class="border p-3 col-4 rounded rounded-3 ms-auto"
+         sec:authorize="hasAuthority('ADMIN')">
+      <h6>Genera Busta Paga Per Dipendente</h6>
+      <form method="post" th:action="@{/busta/bustaDipendete}">
+        <div class="d-flex">
+          <div class="col-4">
+            <div>
+              <label>Seleziona Utente</label>
+            </div>
+            <div class="mt-3">
+              <label>Inserisci Data</label>
+            </div>
+          </div>
+
+          <div class="col-6">
+              <select class="form-select form-select-sm" name="username" required>
+                <option selected disabled>Open this select menu</option>
+                <option th:each="utente : ${utente}"
+                        th:value="${utente.username}"
+                        th:text="${utente.username}">federico.molino</option>
+              </select>
+              <div class="mt-2">
+                <input type="month" class="border" name="dataInput" required>
+              </div>
+          </div>
+        </div>
+        <!--BTN genera Busta-->
+        <div class="row">
+          <div class="mt-3">
+            <button type="submit" class="btn btn-sm btn-outline-success">Genera</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 

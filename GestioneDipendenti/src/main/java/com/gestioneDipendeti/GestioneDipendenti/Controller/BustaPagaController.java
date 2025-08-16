@@ -1,15 +1,9 @@
 package com.gestioneDipendeti.GestioneDipendenti.Controller;
 
-import com.gestioneDipendeti.GestioneDipendenti.Entity.BustaPaga;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
-import com.gestioneDipendeti.GestioneDipendenti.Entity.Ruolo;
+import com.gestioneDipendeti.GestioneDipendenti.Entity.*;
 import com.gestioneDipendeti.GestioneDipendenti.Exception.BustaPagaPresente;
 import com.gestioneDipendeti.GestioneDipendenti.Exception.MeseNonCompletoError;
-import com.gestioneDipendeti.GestioneDipendenti.Repository.BustaPagaRepository;
-import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
-import com.gestioneDipendeti.GestioneDipendenti.Repository.DipendenteRepository;
-import com.gestioneDipendeti.GestioneDipendenti.Repository.RuoloRepository;
+import com.gestioneDipendeti.GestioneDipendenti.Repository.*;
 import com.gestioneDipendeti.GestioneDipendenti.Service.InfoBustaPagaService;
 import com.gestioneDipendeti.GestioneDipendenti.Service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,17 +36,20 @@ public class BustaPagaController {
 
     private RuoloRepository ruoloRepository;
 
+    private UtenteRepository utenteRepository;
+
 
     @Autowired
     public BustaPagaController(BustaPagaRepository bustaPagaRepository, LoginService loginService, DipendenteRepository
                                dipendenteRepository, ContrattoRepository contrattoRepository, InfoBustaPagaService
-                               infoBustaPagaService, RuoloRepository ruoloRepository){
+                               infoBustaPagaService, RuoloRepository ruoloRepository, UtenteRepository utenteRepository){
         this.bustaPagaRepository = bustaPagaRepository;
         this.loginService = loginService;
         this.dipendenteRepository = dipendenteRepository;
         this.contrattoRepository = contrattoRepository;
         this.infoBustaPagaService = infoBustaPagaService;
         this.ruoloRepository = ruoloRepository;
+        this.utenteRepository = utenteRepository;
     }
 
     @GetMapping
@@ -69,6 +67,14 @@ public class BustaPagaController {
                 return "BustaPaga/InfoBustaPaga";
             }
         }
+
+        List<Contratto> contrattiPerDipendenti = contrattoRepository.findAll();
+        List<Utente> utentiConContratto = new ArrayList<>();
+        for (Contratto dip : contrattiPerDipendenti){
+            Dipendente d = dip.getDipendente();
+            utentiConContratto.add(d.getUtente());
+        }
+        model.addAttribute("utente", utentiConContratto);
 
         List<BustaPaga> listBustaPagaPerDipendente = bustaPagaRepository.findByDipendente(dipendente);
         if (!listBustaPagaPerDipendente.isEmpty()){
@@ -155,6 +161,54 @@ public class BustaPagaController {
                     return "BustaPaga/BustaPagaModel";
                 }
             }
+        }
+        return "redirect:/busta";
+    }
+
+    @PostMapping("/bustaDipendete")
+    public String generaSingolaBustaPerDipendenti(@RequestParam(name = "dataInput", required = false) String dataInput,
+                                                  String username,RedirectAttributes redirectAttributes){
+        if (dataInput == null){
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Data Passata non valida");
+            return "redirect:/busta";
+        }
+        String data = LocalDate.now().toString().substring(4,7);
+        int dataF = Integer.parseInt(data);
+        String dataPassataFormattata = dataInput.substring(4);
+        int dataInputF = Integer.parseInt(dataPassataFormattata);
+
+        //Recupero Dipendente
+        Optional<Utente> u = utenteRepository.findByUsername(username);
+        Dipendente d = null;
+        if (u.isPresent()){
+            d = u.get().getDipendente();
+        }else {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Utente Passato non valido");
+            return "redirect:/busta";
+        }
+
+        if (Math.abs(dataF) >= Math.abs(dataInputF)){
+            try {
+                infoBustaPagaService.generaBustaPagaPerDipendetiConData(d,dataInput);
+            }catch (ArithmeticException ex){
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "Errore durante la creazione della busta paga");
+                return "redirect:/busta";
+            }catch (MeseNonCompletoError mce){
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "Mese non completo, verifica timbrature e chiusura giornate");
+                return "redirect:/busta";
+            }catch (BustaPagaPresente bpp){
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "Busta Paga già presente per il mese selezionato");
+                return "redirect:/busta";
+            }
+        }else {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Non puoi passare un mese superiore ad oggi");
+            return "redirect:/busta";
         }
         return "redirect:/busta";
     }
