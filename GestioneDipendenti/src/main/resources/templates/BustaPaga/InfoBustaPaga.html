@@ -34,11 +34,22 @@
       </div>
 
       <div sec:authorize="hasAuthority('ADMIN')">
-        <form method="post" th:action="@{/busta/genera/bustePaghe}">
-          <button type="submit" class="btn btn-sm" id="generaBustePaghe" disabled>
-            Genera Buste Paghe
-          </button>
-        </form>
+        <div class="d-flex">
+          <form method="post" th:action="@{/busta/genera/bustePaghe}">
+            <button type="submit" class="btn btn-sm" id="generaBustePaghe" disabled>
+              Genera Buste Paghe
+            </button>
+          </form>
+
+          <div class="ms-3">
+            <form method="post" th:action="@{/busta/genera/bustaPaga}">
+              <button type="submit" class="btn btn-sm border border-black"
+                      id="generaSingolaBustaPaga">
+                Genera Busta Paga Mensile
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>

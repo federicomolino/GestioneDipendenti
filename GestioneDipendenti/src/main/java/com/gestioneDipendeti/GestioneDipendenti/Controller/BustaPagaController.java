@@ -5,6 +5,7 @@ import com.gestioneDipendeti.GestioneDipendenti.Entity.Contratto;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Dipendente;
 import com.gestioneDipendeti.GestioneDipendenti.Entity.Ruolo;
 import com.gestioneDipendeti.GestioneDipendenti.Exception.BustaPagaPresente;
+import com.gestioneDipendeti.GestioneDipendenti.Exception.MeseNonCompletoError;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.BustaPagaRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.ContrattoRepository;
 import com.gestioneDipendeti.GestioneDipendenti.Repository.DipendenteRepository;
@@ -108,6 +109,27 @@ public class BustaPagaController {
         }
     }
 
+    @PostMapping("/genera/bustaPaga")
+    public String generaBustaPagaMensile(RedirectAttributes redirectAttributes, Principal principal){
+        Dipendente d = loginService.recuperoDipendente(principal);
+        try {
+            infoBustaPagaService.generaSingolaBustaPagaPerDipendente(d);
+            redirectAttributes.addFlashAttribute("successMessage", "Busta paga creata correttamente");
+        }catch (BustaPagaPresente bp){
+            redirectAttributes.addFlashAttribute("errorMessage", "Busta paga già presente");
+        }catch (ArithmeticException ex){
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Errore durante la creazione della busta paga");
+        }catch (IllegalArgumentException e){
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Contratto non presente per il dipendente");
+        }catch (MeseNonCompletoError ex){
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Mese non completo o chiusura giornate incompleta");
+        }
+        return "redirect:/busta";
+    }
+
     @GetMapping("/stampa/{idBustaPaga}")
     public String showBustaPaga(@PathVariable("idBustaPaga")long idBustaPaga, Model model){
         Optional<BustaPaga> bustaPagaId = bustaPagaRepository.findById(idBustaPaga);
@@ -123,6 +145,12 @@ public class BustaPagaController {
                     model.addAttribute("bustaPaga",bustaPagaId.get());
                     model.addAttribute("dipendente",dipendente.get());
                     model.addAttribute("ruolo",ruoloDipendente.get());
+                    model.addAttribute("meseFormattato",meseFormattato);
+                    return "BustaPaga/BustaPagaModel";
+                }else {
+                    model.addAttribute("bustaPaga",bustaPagaId.get());
+                    model.addAttribute("dipendente",dipendente.get());
+                    model.addAttribute("ruolo",null);
                     model.addAttribute("meseFormattato",meseFormattato);
                     return "BustaPaga/BustaPagaModel";
                 }

@@ -44,14 +44,18 @@
         <div>
           <div>
             <strong>Ruolo:</strong>
-            <span th:text="${ruolo.nome}">Software Developer</span>
+            <!--Se null non stampa nulla-->
+            <span th:text="${ruolo?.nome}">Software Developer</span>
           </div>
 
           <div class="mt-2">
             <strong>Area Funzionale:</strong>
-            <span th:text="${ruolo.areaFunzionale}">Produzione Sanità</span>
+            <!--Se null non stampa nulla-->
+            <span th:text="${ruolo?.areaFunzionale}">Produzione Sanità</span>
           </div>
         </div>
+        </div>
+      </div>
       </div>
       <hr>
 
