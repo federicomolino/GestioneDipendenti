@@ -168,7 +168,7 @@ public class BustaPagaController {
     @PostMapping("/bustaDipendete")
     public String generaSingolaBustaPerDipendenti(@RequestParam(name = "dataInput", required = false) String dataInput,
                                                   String username,RedirectAttributes redirectAttributes){
-        if (dataInput == null){
+        if (dataInput.isEmpty()){
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Data Passata non valida");
             return "redirect:/busta";
